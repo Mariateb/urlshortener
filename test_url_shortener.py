@@ -1,21 +1,30 @@
-# Save this as test_url_shortener.py
+# Sauvegardez ceci en tant que test_url_shortener.py
 from url_shortener_class import UrlShortener
 
 def test_url_shortener():
+    """
+    Un script de test pour la classe UrlShortener, démontrant l'insertion d'un nouveau lien,
+    la génération d'une URL courte, la suppression des liens expirés et la fermeture de la connexion.
+    """
+
+    # Création d'une instance de la classe UrlShortener avec une base de données de test
     url_shortener = UrlShortener("test_database.db")
 
-    # Insert a new link
+    # Insertion d'un nouveau lien avec une durée de validité de 10 jours
     link_id = url_shortener.inser_new_link("https://example.com", days=10)
 
-    # Generate the short URL from the ID
-    short_url = url_shortener.get_short_url(link_id="lol")
-    print(f"{short_url}")
+    # Génération de l'URL courte à partir de l'ID
+    short_url = url_shortener.get_short_url(link_id)
 
-    # Check and delete expired links
+    # Affichage de l'URL courte
+    print(f"URL courte générée : {short_url}")
+
+    # Vérification et suppression des liens expirés
     url_shortener.delete_old_link()
 
-    # Close the connection
+    # Fermeture de la connexion à la base de données
     url_shortener.close_connection()
 
 if __name__ == "__main__":
+    # Appel de la fonction de test
     test_url_shortener()
