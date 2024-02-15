@@ -1,5 +1,5 @@
 # Sauvegardez ceci en tant que test_url_shortener.py
-from url_shortener_class import UrlShortener
+from databaseHandler import UrlShortener
 
 def test_url_shortener():
     """
