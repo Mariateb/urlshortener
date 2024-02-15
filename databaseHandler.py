@@ -10,7 +10,7 @@ class DatabaseHandler:
         self.cursor = self.connection.cursor()
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS links(
-            id INTEGER PRIMARY KEY,
+            id TEXT PRIMARY KEY,
             link TEXT,
             created_at DATETIME,
             expires_at DATETIME)
@@ -46,7 +46,4 @@ class DatabaseHandler:
         return None
 
     def close_connection(self):
-
         self.connection.close()
-
-
