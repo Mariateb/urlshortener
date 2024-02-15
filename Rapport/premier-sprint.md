@@ -17,8 +17,47 @@ redirigé sur l'URL raccourcie.
 
 ## Daily mi-sprint:
 
-- Sabri a fait la fonction de hashage et ça a été merge
+- Sabri a fait la fonction de hashage et ça a été merge, il reprend la tâche de Quentin qui est absent
 - Jérémie a fait l'api, il clean son code et retire les TODO, ensuite il aidera à brancher le front à l'api
 - Yacine a écrit les rapports et fait le formulaire de raccourcissement, il le finit en le branchant à l'api
 - Quentin a mis en place la base de données, étant absent Sabri reprend sa tâche pour clean le code et vérifier le bon
   fonctionnement
+
+## Review
+
+4 tâches à faire:
+
+- Fonction de hashage
+- Database
+- Api
+- Front
+
+Tâches terminées:
+
+- Fonction de hashage
+- Database
+
+Tâche api bientôt achevé  
+Tâche front bloqué, en attente de l'api
+
+Remarque: Quentin absent à la deuxième partie du sprint, cela nous a retardé car il a fallut reprendre sa tâche
+
+## Rétro
+
+Ce qui s'est bien passé:
+
+- dev rapide, efficace
+- bien revenir sur ce qu'on a fait et ce qui doit être fait
+
+Ce qui s'est mal passé:
+
+- problème de Git
+- absence surprise de Quentin
+- manque de gestions d'erreur
+
+Actions:
+
+- Définir des délais pour chaque tâche
+- Définir les scopes
+- Meilleures communications
+- Voir dès le début les tâches liées/bloquantes 
