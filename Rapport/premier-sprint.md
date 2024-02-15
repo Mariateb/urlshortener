@@ -9,3 +9,5 @@ L'utilisateur a accès à un formulaire où il peut entrer une URL et reçoit un
 - Mise en place de la fonction de génération de clé à partir d'une URL (hashage)
 - Implémentation de la base de données pour stocker les URLs raccourcies et les clés associés
 - Page HTML pour afficher le formulaire de connexion
+
+/!\ pour les prochaines tâches penser à définir le temps nécessaire à chaque tâche 
