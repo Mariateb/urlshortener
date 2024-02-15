@@ -30,16 +30,13 @@ class DatabaseHandler:
         self.connection.commit()
         return self.cursor.lastrowid
 
-    #TODO: à refaire d'urgence
-    def delete_old_link(self):
+    def deleteOldLinks(self):
         current_date = datetime.now()
-        self.cursor.execute("SELECT id, link, create_at, expire_at FROM url WHERE expire_at <= ?", (current_date,))
+        self.cursor.execute("SELECT id FROM links WHERE expires_at <= ?", (current_date,))
         expired_links = self.cursor.fetchall()
 
-        for link_data in expired_links:
-            print(
-                f"Lien expiré - ID : {link_data[0]} - Lien : {link_data[1]} - Date de création : {link_data[2]} - Date d'expiration : {link_data[3]}")
-            self.cursor.execute("DELETE FROM url WHERE id = ?", (link_data[0],))
+        for link in expired_links:
+            self.cursor.execute("DELETE FROM links WHERE id = ?", (link[0],))
 
     def getLink(self, hashing) -> str | None:
         self.cursor.execute("SELECT link FROM links WHERE id = ?", (hashing,))
