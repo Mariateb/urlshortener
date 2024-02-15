@@ -19,4 +19,4 @@ class Hasher:
         :author: Sabri MOUSSA
         """
         self.hash.update(bytes(inputString, 'utf8'))
-        return self.hash.hexdigest(size)
+        return self.hash.hexdigest(64)[:size]
