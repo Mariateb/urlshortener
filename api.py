@@ -2,7 +2,8 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, RedirectResponse
 import uvicorn
 
-#import database, hasher TODO: mettre les bonnes importations
+import hasher
+
 
 def databaseGet(name):#TODO: enlever ça dans la prod
     if name == "test":#TODO: enlever ça dans la prod
@@ -10,34 +11,30 @@ def databaseGet(name):#TODO: enlever ça dans la prod
     return None #TODO: enlever ça dans la prod
 
 
-def hasherTest():#TODO: enlever ça dans la prod
-    return True #TODO: enlever ça dans la prod
-
 app = FastAPI()
 
-###TODO: modifier variables hasher, database
 
 @app.get("/{shortName}", response_class=RedirectResponse)
-def reroute(shortName):
+async def reroute(shortName):
     """
     reroute to the website linked or send an error response
-    :param shortName:
+    :param shortName: the shortened name
     :return a redirection or the error response:
     """
-    if databaseGet(shortName) != None:
+    if databaseGet(shortName):
         return RedirectResponse(url=databaseGet(shortName))
-    return HTMLResponse(content="c'est pas bon : "+shortName, status_code=500)#TODO: trouver un vrai code d'erreur
+    return HTMLResponse(content="c'est pas bon : "+shortName, status_code=404)
 
 @app.post("/create", response_class=HTMLResponse)
-def create():
+async def create(url: str = "", size: int = 8):
     """
     allows to create a short link by giving in the post the URL as a parameter
+    :param url: the url to shorten
+    :param size: the size of the shortened url requested
     :return the response:
     """
-    if hasherTest():#TODO: use the URL parameter
-        return HTMLResponse(content="c'est ok")
-    return HTMLResponse(content="c'est pas bon", status_code=500)#TODO: trouver un vrai code d'erreur
-
-
-if __name__ == "__main__":
-    uvicorn.run("api:app", port=8000, log_level="info", reload=True)
+    myHasher = hasher.Hasher()
+    hashed = myHasher.hashString(url, size)
+    if url != "" and hashed:
+        return HTMLResponse(content=hashed)
+    return HTMLResponse(content="c'est pas bon", status_code=422)
