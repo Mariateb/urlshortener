@@ -1,14 +1,8 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, RedirectResponse
-import uvicorn
 
-import hasher
+import hasher, databaseHandler
 
-
-def databaseGet(name):#TODO: enlever ça dans la prod
-    if name == "test":#TODO: enlever ça dans la prod
-        return "https://www.youtube.com"#TODO: enlever ça dans la prod
-    return None #TODO: enlever ça dans la prod
 
 
 app = FastAPI()
@@ -21,8 +15,10 @@ async def reroute(shortName):
     :param shortName: the shortened name
     :return a redirection or the error response:
     """
-    if databaseGet(shortName):
-        return RedirectResponse(url=databaseGet(shortName))
+    theDatabase = databaseHandler.DatabaseHandler()
+    link = theDatabase.getLink(shortName)
+    if link:
+        return RedirectResponse(url=link)
     return HTMLResponse(content="c'est pas bon : "+shortName, status_code=404)
 
 @app.post("/create", response_class=HTMLResponse)
@@ -36,5 +32,8 @@ async def create(url: str = "", size: int = 8):
     myHasher = hasher.Hasher()
     hashed = myHasher.hashString(url, size)
     if url != "" and hashed:
-        return HTMLResponse(content=hashed)
+        theDatabase = databaseHandler.DatabaseHandler()
+        if theDatabase.insertLink(url,hashed):
+            return HTMLResponse(content=hashed)
+        return HTMLResponse(content="erreur avec la bdd", status_code=500)
     return HTMLResponse(content="c'est pas bon", status_code=422)
