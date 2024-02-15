@@ -9,7 +9,7 @@ class Hasher:
     def __init__(self):
         self.hash = hashlib.shake_128()
 
-    def hashString(self, inputString: str, size: int) -> str:
+    def hashString(self, inputString: str, size: int = 4) -> str:
         """
         Hash a given input string and return the hash value
         :param inputString: The string to hash
@@ -19,4 +19,4 @@ class Hasher:
         :author: Sabri MOUSSA
         """
         self.hash.update(bytes(inputString, 'utf8'))
-        return self.hash.hexdigest(size)
+        return self.hash.hexdigest(64)[:size]
