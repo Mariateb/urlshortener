@@ -36,9 +36,9 @@ Tâches terminées:
 
 - Fonction de hashage
 - Database
+- Api
 
-Tâche api bientôt achevé  
-Tâche front bloqué, en attente de l'api
+Tâche front retardé car en attente de l'api
 
 Remarque: Quentin absent à la deuxième partie du sprint, cela nous a retardé car il a fallut reprendre sa tâche
 
