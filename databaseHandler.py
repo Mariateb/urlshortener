@@ -25,7 +25,7 @@ class DatabaseHandler:
         expires_at = created_at + timedelta(days=duration)
 
         try:
-            self.cursor.execute("SELECT id FROM links WHERE id <= ?", (hashedLink,))
+            self.cursor.execute("SELECT id FROM links WHERE id = ?", (hashedLink,))
         except sqlite3.OperationalError:
             self.resetConnection()
             return
