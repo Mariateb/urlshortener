@@ -48,6 +48,9 @@ class DatabaseHandler:
     def close_connection(self):
         self.connection.close()
 
+    def register(self, login, password):
+        return 'token'
+
     def authenticate(self, login, password):
         #authentification
         if password == 'test':

@@ -24,8 +24,12 @@ async def home(request: Request):
 async def login(request: Request):
     return templates.TemplateResponse(request=request, name='login.html')
 
+@app.get('/register')
+async def login(request: Request):
+    return templates.TemplateResponse(request=request, name='register.html')
+
 @app.get('/disconnect')
-async def disconnect(request: Request):
+async def disconnect():
     theResponse = RedirectResponse(url='http://localhost:8000/')
     theResponse.delete_cookie("token")
     return theResponse
@@ -56,7 +60,7 @@ async def create(request: Request, url: Annotated[str, Form()], size: Annotated[
     myHasher = hasher.Hasher()
     hashed = myHasher.hashString(url, size)
     if request.cookies.get("token"):
-        return HTMLResponse(content="oui ! ton cookie token est : " + request.cookies.get("token"))#TODO: authentification
+        return HTMLResponse(content="oui ! ton cookie token est : " + request.cookies.get("token"))
     if url != "" and hashed:
         theDatabase = databaseHandler.DatabaseHandler()
         try:
@@ -65,7 +69,7 @@ async def create(request: Request, url: Annotated[str, Form()], size: Annotated[
                     request=request,
                     name='shortened-url.html',
                     context={'url': 'http://localhost:8000/' + hashed}
-                ) ##TODO: changer localhost:8000 en qqch de dynamique
+                )
         except IntegrityError:
             return templates.TemplateResponse(
                     request=request,
@@ -77,11 +81,23 @@ async def create(request: Request, url: Annotated[str, Form()], size: Annotated[
         return HTMLResponse(content="erreur avec la bdd", status_code=500)
     return HTMLResponse(content="c'est pas bon", status_code=422)
 
+@app.post("/registerUser", response_class=HTMLResponse)
+async def registerUser(request: Request, login: Annotated[str, Form()], password: Annotated[str, Form()]):
+    theDatabase = databaseHandler.DatabaseHandler()
+    ##TODO: securiser mdp
+    token = theDatabase.register(login, password)
+    if token:
+        max_age = 3600 * 24  # one day
+        expires = datetime.datetime.strftime(datetime.datetime.utcnow() + datetime.timedelta(seconds=max_age),
+                                             "%a, %d-%b-%Y %H:%M:%S GMT")
+
+        theResponse = templates.TemplateResponse(request=request, name='home-connected.html')
+        theResponse.set_cookie("token", str(token), max_age=max_age, expires=expires)
+        return theResponse
+    return templates.TemplateResponse(request=request, name='register.html')
+
 @app.post("/authenticate", response_class=HTMLResponse)
 async def authenticate(request: Request, login: Annotated[str, Form()], password: Annotated[str, Form()]):
-    # token = databaseHandler.authenticate(login, password)
-    # if token:
-    #     return HTMLResponse(content=token)
     theDatabase = databaseHandler.DatabaseHandler()
     ##TODO: securiser mdp
     token = theDatabase.authenticate(login, password)
