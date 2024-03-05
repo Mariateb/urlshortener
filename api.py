@@ -24,6 +24,7 @@ async def reroute(shortName):
     :return a redirection or the error response:
     """
     theDatabase = databaseHandler.DatabaseHandler()
+    theDatabase.deleteOldLinks()
     link = theDatabase.getLink(shortName)
     if link:
         return RedirectResponse(url=link)
