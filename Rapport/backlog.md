@@ -1,5 +1,7 @@
 # Backlog
 
+## Terminé
+
 ### Mettre en place l'API
 
 Description: mettre en place l'API http  
@@ -21,9 +23,24 @@ A voir entre génération aléatoire ou hashage
 
 Description: Page Internet où l'utilisateur peut saisir une url, et affichage de l'url raccourcie
 
-### Connexion utilisateur
+### Gestion des erreurs
+
+Description: il faut gérer les erreurs dans l'application afin qu'elle ne crash pas  
+Pensez aux tests
+
+## En cours
+
+### Connexion utilisateur --> à redécouper
 
 Description: Permettre aux utilisateurs de créer un compte et de se connecter
+
+#### Stockage des infos + authentification
+
+Description: 
+
+#### Formulaire de connexion et création de compte
+
+Description: in
 
 ### Durée de vie des urls raccourcies paramétrable pour utilisateurs connectés
 
@@ -34,7 +51,8 @@ Description: les utilisateurs peuvent sélectionner la durée de vie de l'url ra
 Description: associer url raccourcie à l'utilisateur et lui permettre de voir les urls qu'il a raccourcies et leur durée
 de vie
 
-### Gestion des erreurs
+## A faire
 
-Description: il faut gérer les erreurs dans l'application afin qu'elle ne crash pas  
-Pensez aux tests
+### Nombre de visites URL pour utilisateur connecté
+
+Description:  

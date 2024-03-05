@@ -13,13 +13,17 @@ templates = Jinja2Templates('templates')
 
 @app.get('/')
 async def home(request: Request):
+    """
+    Homepage
+    """
     return templates.TemplateResponse(request=request, name='home.html')
 
 
 @app.get("/{shortName}", response_class=RedirectResponse)
-async def reroute(shortName):
+async def reroute(request: Request, shortName):
     """
     reroute to the website linked or send an error response
+    :param request: request Object
     :param shortName: the shortened name
     :return a redirection or the error response:
     """
@@ -28,14 +32,14 @@ async def reroute(shortName):
     link = theDatabase.getLink(shortName)
     if link:
         return RedirectResponse(url=link)
-    return HTMLResponse(content="c'est pas bon : " + shortName, status_code=404)
+    return templates.TemplateResponse(request=request, name='not-found.html', status_code=404)
 
 
 @app.post("/create", response_class=HTMLResponse)
 async def create(request: Request, url: Annotated[str, Form()], duration: Annotated[int, Form()], size: Annotated[int, Form()]):
     """
-    allows to create a short link by giving in the post the URL as a parameter
-    :param duration:
+    Allows to create a short link by giving in the post the URL as a parameter
+
     :param request:
     :param url: the url to shorten
     :param duration: the time period before we can delete the URL in days
@@ -49,5 +53,4 @@ async def create(request: Request, url: Annotated[str, Form()], duration: Annota
         if theDatabase.insertLink(url, hashed, duration=duration):
             return templates.TemplateResponse(
                 request=request, name='shortened-url.html', context={'url': 'http://localhost:8000/' + hashed})
-        return HTMLResponse(content="erreur avec la bdd", status_code=500)
     return HTMLResponse(content="c'est pas bon", status_code=422)
