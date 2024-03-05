@@ -30,17 +30,14 @@ Pensez aux tests
 
 ## En cours
 
-### Connexion utilisateur --> à redécouper
+### Connexion utilisateur
 
 Description: Permettre aux utilisateurs de créer un compte et de se connecter
 
-#### Stockage des infos + authentification
+Découpage en 2 sous-tâches:
 
-Description: 
-
-#### Formulaire de connexion et création de compte
-
-Description: in
+* Stockage des infos + authentification
+* Formulaire de connexion et création de compte
 
 ### Durée de vie des urls raccourcies paramétrable pour utilisateurs connectés
 
@@ -55,4 +52,5 @@ de vie
 
 ### Nombre de visites URL pour utilisateur connecté
 
-Description:  
+Description: Dans l'affichage des urls d'un utilisateur, afficher le nombre de fois que l'url a été visitée  
+Piste: lors de la redirection
