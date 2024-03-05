@@ -1,9 +1,8 @@
 import logging
 import sqlite3
 from datetime import datetime, timedelta
-
+from typing import Any
 from fastapi import HTTPException
-
 
 class DatabaseHandler:
 
@@ -21,9 +20,19 @@ class DatabaseHandler:
 
         self.connection.commit()
 
-    def insertLink(self, link: str, hashedLink: str, duration: int = 180) -> str:
+    def insertLink(self, link: str, hashedLink: str, duration: int = 180) -> str | None:
         created_at = datetime.now()
         expires_at = created_at + timedelta(days=duration)
+
+        try:
+            self.cursor.execute("SELECT id FROM links WHERE id = ?", (hashedLink,))
+        except sqlite3.OperationalError:
+            self.resetConnection()
+            return
+        links = self.cursor.fetchall()
+
+        if len(links) == 0:
+            return hashedLink
 
         self.cursor.execute("""
         INSERT INTO links VALUES (?, ?, ?, ?)""",
