@@ -60,4 +60,11 @@ Actions:
 - Définir des délais pour chaque tâche
 - Définir les scopes
 - Meilleures communications
-- Voir dès le début les tâches liées/bloquantes 
+- Voir dès le début les tâches liées/bloquantes
+
+### Sprint Backlog
+
+[Mettre en place l'api](backlog.md#mettre-en-place-lapi)
+[Base de données](backlog.md#base-de-données)
+[Génération url raccourcie](backlog.md#génération-url-raccourci)
+[UI](backlog.md#interface-utilisateur)
