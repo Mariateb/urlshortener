@@ -19,7 +19,7 @@ class DatabaseHandler:
 
         self.connection.commit()
 
-    def insertLink(self, link: str, hashedLink: str, duration: int = 180):
+    def insertLink(self, link: str, hashedLink: str, duration: int = 180) -> int | None:
         created_at = datetime.now()
         expires_at = created_at + timedelta(days=duration)
 
@@ -33,6 +33,7 @@ class DatabaseHandler:
             self.connection.commit()
         except sqlite3.OperationalError:
             self.resetConnection()
+            return None
         return self.cursor.lastrowid
 
     def deleteOldLinks(self):
@@ -41,6 +42,7 @@ class DatabaseHandler:
             self.cursor.execute("SELECT id FROM links WHERE expires_at <= ?", (current_date,))
         except sqlite3.OperationalError:
             self.resetConnection()
+            return
         expired_links = self.cursor.fetchall()
 
         for link in expired_links:
