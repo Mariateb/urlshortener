@@ -17,7 +17,7 @@ async def home(request: Request):
 
 
 @app.get("/{shortName}", response_class=RedirectResponse)
-async def reroute(shortName):
+async def reroute(request: Request, shortName):
     """
     reroute to the website linked or send an error response
     :param shortName: the shortened name
@@ -27,13 +27,13 @@ async def reroute(shortName):
     link = theDatabase.getLink(shortName)
     if link:
         return RedirectResponse(url=link)
-    return HTMLResponse(content="c'est pas bon : " + shortName, status_code=404)
+    return templates.TemplateResponse(request=request, name='not-found.html', status_code=404)
 
 
 @app.post("/create", response_class=HTMLResponse)
 async def create(request: Request, url: Annotated[str, Form()], size: Annotated[int, Form()]):
     """
-    allows to create a short link by giving in the post the URL as a parameter
+    Allows to create a short link by giving in the post the URL as a parameter
     :param request:
     :param url: the url to shorten
     :param size: the size of the shortened url requested

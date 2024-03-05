@@ -1,6 +1,5 @@
 import sqlite3
 from datetime import datetime, timedelta
-from typing import Any
 
 
 class DatabaseHandler:
