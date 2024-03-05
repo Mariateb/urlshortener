@@ -29,9 +29,10 @@ Description: Permettre aux utilisateurs de créer un compte et de se connecter
 
 Description: les utilisateurs peuvent sélectionner la durée de vie de l'url raccourcie
 
-### Affichage des urls raccourcies par utilisateurs
+### Gestion des urls raccourcies par utilisateurs
 
-Description: permettre à l'utilisateur de voir les urls qu'il a raccourcies et leur durée de vie
+Description: associer url raccourcie à l'utilisateur et lui permettre de voir les urls qu'il a raccourcies et leur durée
+de vie
 
 ### Gestion des erreurs
 
