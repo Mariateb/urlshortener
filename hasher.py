@@ -1,5 +1,7 @@
 import hashlib
 
+from fastapi import HTTPException
+
 
 class Hasher:
     """
@@ -20,5 +22,8 @@ class Hasher:
         :return hash: The hash value
         :author: Sabri MOUSSA
         """
-        self.hash.update(bytes(inputString, 'utf8'))
-        return self.hash.hexdigest(64)[:size]
+        try:
+            self.hash.update(bytes(inputString, 'utf8'))
+            return self.hash.hexdigest(64)[:size]
+        except Exception as e:
+            raise HTTPException(status_code=422, detail=str(e))
