@@ -6,6 +6,7 @@ from typing import Any
 class DatabaseHandler:
 
     def __init__(self, dbFilename: str = "urlshortener.db"):
+        self.dbFilename = dbFilename
         self.connection = sqlite3.connect(dbFilename)
         self.cursor = self.connection.cursor()
         self.cursor.execute("""
@@ -15,9 +16,10 @@ class DatabaseHandler:
             created_at DATETIME,
             expires_at DATETIME)
             """)
+
         self.connection.commit()
 
-    def insertLink(self, link: str, hashedLink: str, duration: int = 180):
+    def insertLink(self, link: str, hashedLink: str, duration: int = 180) -> int | None:
         created_at = datetime.now()
         expires_at = created_at + timedelta(days=duration)
 
@@ -27,12 +29,20 @@ class DatabaseHandler:
                              link,
                              created_at,
                              expires_at))
-        self.connection.commit()
+        try:
+            self.connection.commit()
+        except sqlite3.OperationalError:
+            self.resetConnection()
+            return None
         return self.cursor.lastrowid
 
     def deleteOldLinks(self):
         current_date = datetime.now()
-        self.cursor.execute("SELECT id FROM links WHERE expires_at <= ?", (current_date,))
+        try:
+            self.cursor.execute("SELECT id FROM links WHERE expires_at <= ?", (current_date,))
+        except sqlite3.OperationalError:
+            self.resetConnection()
+            return
         expired_links = self.cursor.fetchall()
 
         for link in expired_links:
@@ -45,5 +55,7 @@ class DatabaseHandler:
             return result[0]
         return None
 
-    def close_connection(self):
+    def resetConnection(self):
         self.connection.close()
+        self.connection = sqlite3.connect(self.dbFilename)
+        self.cursor = self.connection.cursor()
