@@ -1,5 +1,8 @@
+import logging
 import sqlite3
 from datetime import datetime, timedelta
+
+from fastapi import HTTPException
 
 
 class DatabaseHandler:
@@ -30,17 +33,19 @@ class DatabaseHandler:
                              expires_at))
         try:
             self.connection.commit()
-        except sqlite3.OperationalError:
+        except sqlite3.OperationalError as e:
             self.resetConnection()
-            return None
+            logging.error(e)
+            raise HTTPException(status_code=500, detail="Failed to insert link")
         return self.cursor.lastrowid
 
     def deleteOldLinks(self):
         current_date = datetime.now()
         try:
             self.cursor.execute("SELECT id FROM links WHERE expires_at <= ?", (current_date,))
-        except sqlite3.OperationalError:
+        except sqlite3.OperationalError as e:
             self.resetConnection()
+            logging.error(e)
             return
         expired_links = self.cursor.fetchall()
 

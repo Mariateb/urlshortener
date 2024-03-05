@@ -13,6 +13,9 @@ templates = Jinja2Templates('templates')
 
 @app.get('/')
 async def home(request: Request):
+    """
+    Homepage
+    """
     return templates.TemplateResponse(request=request, name='home.html')
 
 
@@ -20,6 +23,7 @@ async def home(request: Request):
 async def reroute(request: Request, shortName):
     """
     reroute to the website linked or send an error response
+    :param request: request Object
     :param shortName: the shortened name
     :return a redirection or the error response:
     """
@@ -43,8 +47,7 @@ async def create(request: Request, url: Annotated[str, Form()], size: Annotated[
     hashed = myHasher.hashString(url, size)
     if url != "" and hashed:
         theDatabase = databaseHandler.DatabaseHandler()
-        if theDatabase.insertLink(url, hashed):
-            return templates.TemplateResponse(
-                request=request, name='shortened-url.html', context={'url': 'http://localhost:8000/' + hashed})
-        return HTMLResponse(content="erreur avec la bdd", status_code=500)
+        theDatabase.insertLink(url, hashed)
+        return templates.TemplateResponse(
+            request=request, name='shortened-url.html', context={'url': 'http://localhost:8000/' + hashed})
     return HTMLResponse(content="c'est pas bon", status_code=422)
