@@ -1,11 +1,13 @@
 import hashlib
 
+
 class Hasher:
     """
     Hasher class to easily call to hash a given string (usually an URL).
 
     :author: Sabri MOUSSA
     """
+
     def __init__(self):
         self.hash = hashlib.shake_128()
 
