@@ -31,7 +31,7 @@ class DatabaseHandler:
             return
         links = self.cursor.fetchall()
 
-        if len(links) == 0:
+        if len(links) > 0:
             return hashedLink
 
         self.cursor.execute("""
