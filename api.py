@@ -31,11 +31,13 @@ async def reroute(shortName):
 
 
 @app.post("/create", response_class=HTMLResponse)
-async def create(request: Request, url: Annotated[str, Form()], size: Annotated[int, Form()]):
+async def create(request: Request, url: Annotated[str, Form()], duration: Annotated[int, Form()], size: Annotated[int, Form()]):
     """
     allows to create a short link by giving in the post the URL as a parameter
+    :param duration:
     :param request:
     :param url: the url to shorten
+    :param duration: the time period before we can delete the URL in days
     :param size: the size of the shortened url requested
     :return the response:
     """
@@ -43,7 +45,7 @@ async def create(request: Request, url: Annotated[str, Form()], size: Annotated[
     hashed = myHasher.hashString(url, size)
     if url != "" and hashed:
         theDatabase = databaseHandler.DatabaseHandler()
-        if theDatabase.insertLink(url, hashed):
+        if theDatabase.insertLink(url, hashed, duration=duration):
             return templates.TemplateResponse(
                 request=request, name='shortened-url.html', context={'url': 'http://localhost:8000/' + hashed})
         return HTMLResponse(content="erreur avec la bdd", status_code=500)
