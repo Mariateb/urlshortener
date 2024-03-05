@@ -1,7 +1,7 @@
 import os.path
 import sqlite3
 import unittest
-from datetime import date, timedelta
+from datetime import timedelta, datetime
 
 from databaseHandler import DatabaseHandler
 
@@ -20,9 +20,10 @@ class DatabaseHandlerTestCase(unittest.TestCase):
         link = self.databaseHandler.getLink('test')
         self.assertEqual('http://test.com', link)
 
-        yesterday = date.today() - timedelta(days=1)
+        yesterday = datetime.today() - timedelta(days=1)
         self.databaseHandler.cursor.execute('UPDATE links SET expires_at = ? WHERE id = ?',
                                             (yesterday, 'test'))
+        self.databaseHandler.connection.commit()
 
         self.databaseHandler.deleteOldLinks()
         self.assertIsNone(self.databaseHandler.getLink('test'))
