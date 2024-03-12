@@ -17,10 +17,18 @@ class DatabaseHandler:
             created_at DATETIME,
             expires_at DATETIME)
             """)
+        self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS users(
+            login TEXT PRIMARY KEY,
+            password TEXT)
+            """)
 
         self.connection.commit()
 
-    def insertLink(self, link: str, hashedLink: str, duration: int = 180) -> str | None:
+    def insert_link(self, link: str, hashedLink: str, duration: int = 180) -> str | None:
+        if duration <= 0:
+            raise HTTPException(status_code=500, detail="Failed to insert link : Invalid duration")
+
         created_at = datetime.now()
         expires_at = created_at + timedelta(days=duration)
 
@@ -48,7 +56,7 @@ class DatabaseHandler:
             raise HTTPException(status_code=500, detail="Failed to insert link")
         return hashedLink
 
-    def deleteOldLinks(self) -> None:
+    def delete_old_links(self) -> None:
         current_date = datetime.now()
         try:
             self.cursor.execute("SELECT id FROM links WHERE expires_at <= ?", (current_date,))
@@ -62,7 +70,7 @@ class DatabaseHandler:
             self.cursor.execute("DELETE FROM links WHERE id = ?", (link[0],))
         self.connection.commit()
 
-    def getLink(self, hashing) -> str | None:
+    def get_link(self, hashing) -> str | None:
         self.cursor.execute("SELECT link FROM links WHERE id = ?", (hashing,))
         result = self.cursor.fetchone()
         if result:
@@ -73,3 +81,19 @@ class DatabaseHandler:
         self.connection.close()
         self.connection = sqlite3.connect(self.dbFilename)
         self.cursor = self.connection.cursor()
+
+    def create_user(self, login, password):
+        try:
+            self.cursor.execute("""
+            INSERT INTO users VALUES (?, ?)""",
+                            (login,
+                             password))
+        except sqlite3.IntegrityError:
+            self.connection.rollback()
+            return None
+        self.connection.commit()
+        return self.cursor.lastrowid
+
+    def get_user(self, login, password):
+        self.cursor.execute("SELECT login FROM users WHERE login = ? AND password = ?", (login,password,))
+        return self.cursor.fetchone()
