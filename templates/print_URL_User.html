@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste de tes URL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div class="main-form container max-w-[512px] m-auto justify-center flex flex-col">
+        <div class="text-center my-8">
+            <h1 class="text-xl text-center mb-8">Affichage des URLs</h1>
+            <p>Découvre les URLs que tu as raccourcis</p>
+            <table class="table-auto border-collapse border border-slate-500">
+                <thead>
+                    <tr>
+                        <th class="border border-slate-600">ID</th>
+                        <th class="border border-slate-600">URL Raccourci</th>
+                        <th class="border border-slate-600">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="border border-slate-600">{{ api_response['id'] }}</td>
+                        <td class="border border-slate-600">{{ api_response['name'] }}</td>
+                        <td class="border border-slate-600">Action à définir</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
