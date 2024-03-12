@@ -1,8 +1,9 @@
+from sqlite3 import IntegrityError, OperationalError
 from typing import Annotated
 
 from cryptography.fernet import Fernet
 from fastapi import FastAPI, Request, Form, Cookie
-from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 import databaseHandler
@@ -17,7 +18,7 @@ cipher_suite = Fernet('ECMH3_SwZHVz2POSJoNQkYWViWZX_7rkSk51YDWuX6c=')
 def get_logged_user(cookie: Cookie):
     theDatabase = databaseHandler.DatabaseHandler()
     if 'Authorization' in cookie:
-        return theDatabase.getUserById(cipher_suite.decrypt(cookie['Authorization']))
+        return theDatabase.get_user(str(cipher_suite.decrypt(cookie['Authorization'])))
     return None
 
 
@@ -26,11 +27,32 @@ async def home(request: Request):
     """
     Homepage
     """
-    return templates.TemplateResponse(request=request, name='home.html')
+    return templates.TemplateResponse(
+        request=request,
+        name='home.html',
+        context={'isLogged': request.cookies.get("token") is not None}
+    )
+
+
+@app.get('/login')
+async def login(request: Request):
+    return templates.TemplateResponse(request=request, name='login.html')
+
+
+@app.get('/register')
+async def login(request: Request):
+    return templates.TemplateResponse(request=request, name='register.html')
+
+
+@app.get('/disconnect')
+async def disconnect():
+    theResponse = RedirectResponse(url='/')
+    theResponse.delete_cookie('Authorization')
+    return theResponse
 
 
 @app.get("/{shortName}", response_class=RedirectResponse)
-async def reroute(request: Request, shortName):
+async def redirect(shortName, request: Request):
     """
     reroute to the website linked or send an error response
     :param request: request Object
@@ -38,8 +60,8 @@ async def reroute(request: Request, shortName):
     :return a redirection or the error response:
     """
     theDatabase = databaseHandler.DatabaseHandler()
-    theDatabase.deleteOldLinks()
-    link = theDatabase.getLink(shortName)
+    theDatabase.delete_old_links()
+    link = theDatabase.get_link(shortName)
     if link:
         return RedirectResponse(url=link)
     return templates.TemplateResponse(request=request, name='not-found.html', status_code=404)
@@ -58,37 +80,58 @@ async def create(request: Request, url: Annotated[str, Form()], duration: Annota
     :return the response:
     """
     myHasher = hasher.Hasher()
-    hashed = myHasher.hashString(url, size)
+    hashed = myHasher.hash_string(url, size)
     if url != "" and hashed:
         theDatabase = databaseHandler.DatabaseHandler()
-        if theDatabase.insertLink(url, hashed, duration=duration):
+        try:
+            if theDatabase.insert_link(url, hashed, duration=duration):
+                return templates.TemplateResponse(
+                    request=request,
+                    name='shortened-url.html',
+                    context={'url': 'http://localhost:8000/' + hashed}
+                )
+        except IntegrityError:
             return templates.TemplateResponse(
-                request=request, name='shortened-url.html', context={'url': 'http://localhost:8000/' + hashed})
+                request=request,
+                name='shortened-url.html',
+                context={'url': 'http://localhost:8000/' + hashed}
+            )
+        except OperationalError:
+            return templates.TemplateResponse(request=request, name='home.html', status_code=500)
+        return HTMLResponse(content="erreur avec la bdd", status_code=500)
     return HTMLResponse(content="c'est pas bon", status_code=422)
 
 
 @app.post("/login")
-def login(username: str, password: str):
+def login(request: Request, login: Annotated[str, Form()], password: Annotated[str, Form()]):
     theDatabase = databaseHandler.DatabaseHandler()
 
-    user = theDatabase.getUserByUsername(username)
+    user = theDatabase.get_user(login)
     if user is None:
-        return JSONResponse(status_code=404, content="User not found")
+        return templates.TemplateResponse(request=request, name='login.html', status_code=404, context={
+            'message': "L'utilisateur n'existe pas"
+        })
 
-    if user["password"] != hash_password(password):
-        return JSONResponse(status=401, content="Incorrect password")
+    if theDatabase.get_password(login) != hasher.hash_password(password):
+        return templates.TemplateResponse(request=request, name='login.html', status_code=401, context={
+            'message': "Mot de passe incorrect"
+        })
 
     response = RedirectResponse("/", status_code=302)
-    response.set_cookie(key="Authorization", value=cipher_suite.encrypt(user.id.encode()))
+    response.set_cookie(key="Authorization", value=str(cipher_suite.encrypt(login.encode())))
 
     return response
 
 
 @app.post("/register")
-def register(username: str, password: str):
+def register(request: Request, login: Annotated[str, Form()], password: Annotated[str, Form()]):
     theDatabase = databaseHandler.DatabaseHandler()
-    user = theDatabase.create_user(username, password)
+    if theDatabase.get_user(login) is not None:
+        return templates.TemplateResponse(request=request, name='register.html', context={
+            'message': "Identifiant déjà pris"
+        })
+    user = theDatabase.create_user(login, password)
     response = RedirectResponse("/", status_code=302)
-    response.set_cookie(key="Authorization", value=cipher_suite.encrypt(user.id.encode()))
+    response.set_cookie(key="Authorization", value=str(cipher_suite.encrypt(login.encode())))
 
     return response
