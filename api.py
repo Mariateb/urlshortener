@@ -1,5 +1,6 @@
 from typing import Annotated
 
+from cryptography.fernet import Fernet
 from fastapi import FastAPI, Request, Form, Cookie
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
@@ -10,11 +11,13 @@ import hasher
 app = FastAPI()
 templates = Jinja2Templates('templates')
 
+cipher_suite = Fernet('ECMH3_SwZHVz2POSJoNQkYWViWZX_7rkSk51YDWuX6c=')
+
 
 def get_logged_user(cookie: Cookie):
     theDatabase = databaseHandler.DatabaseHandler()
     if 'Authorization' in cookie:
-        return theDatabase.getUserById(cookie['Authorization'])
+        return theDatabase.getUserById(cipher_suite.decrypt(cookie['Authorization']))
     return None
 
 
@@ -76,7 +79,7 @@ def login(username: str, password: str):
         return JSONResponse(status=401, content="Incorrect password")
 
     response = RedirectResponse("/", status_code=302)
-    response.set_cookie(key="Authorization", value=user.id)
+    response.set_cookie(key="Authorization", value=cipher_suite.encrypt(user.id.encode()))
 
     return response
 
@@ -86,6 +89,6 @@ def register(username: str, password: str):
     theDatabase = databaseHandler.DatabaseHandler()
     user = theDatabase.create_user(username, password)
     response = RedirectResponse("/", status_code=302)
-    response.set_cookie(key="Authorization", value=user.id)
+    response.set_cookie(key="Authorization", value=cipher_suite.encrypt(user.id.encode()))
 
     return response
