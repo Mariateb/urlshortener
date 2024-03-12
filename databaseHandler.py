@@ -21,6 +21,9 @@ class DatabaseHandler:
         self.connection.commit()
 
     def insertLink(self, link: str, hashedLink: str, duration: int = 180) -> str | None:
+        if duration <= 0:
+            raise HTTPException(status_code=500, detail="Failed to insert link : Invalid duration")
+
         created_at = datetime.now()
         expires_at = created_at + timedelta(days=duration)
 
