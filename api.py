@@ -1,7 +1,7 @@
 from typing import Annotated
 
 from fastapi import FastAPI, Request, Form
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 
 import databaseHandler
@@ -36,7 +36,8 @@ async def reroute(request: Request, shortName):
 
 
 @app.post("/create", response_class=HTMLResponse)
-async def create(request: Request, url: Annotated[str, Form()], duration: Annotated[int, Form()], size: Annotated[int, Form()]):
+async def create(request: Request, url: Annotated[str, Form()], duration: Annotated[int, Form()],
+                 size: Annotated[int, Form()]):
     """
     Allows to create a short link by giving in the post the URL as a parameter
 
@@ -54,3 +55,30 @@ async def create(request: Request, url: Annotated[str, Form()], duration: Annota
             return templates.TemplateResponse(
                 request=request, name='shortened-url.html', context={'url': 'http://localhost:8000/' + hashed})
     return HTMLResponse(content="c'est pas bon", status_code=422)
+
+
+@app.post("/login")
+def login(username: str, password: str):
+    theDatabase = databaseHandler.DatabaseHandler()
+
+    user = theDatabase.getUserByUsername(username)
+    if user is None:
+        return JSONResponse(status_code=404, content="User not found")
+
+    if user["password"] != hash_password(password):
+        return JSONResponse(status=401, content="Incorrect password")
+
+    response = RedirectResponse("/", status_code=302)
+    response.set_cookie(key="Authorization", value=user.id)
+
+    return response
+
+
+@app.post("/register")
+def register(username: str, password: str):
+    theDatabase = databaseHandler.DatabaseHandler()
+    user = theDatabase.create_user(username, password)
+    response = RedirectResponse("/", status_code=302)
+    response.set_cookie(key="Authorization", value=user.id)
+
+    return response
