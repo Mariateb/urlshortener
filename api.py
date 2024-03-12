@@ -1,4 +1,4 @@
-from typing import Annotated, List
+from typing import Annotated, List, Tuple
 
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -17,17 +17,12 @@ templates = Jinja2Templates('templates')
 async def home(request: Request):
     return templates.TemplateResponse(request=request, name='home.html')
 
-def get_shortened_urls_from_database_user() -> List[str]:
+def get_shortened_urls_from_database_user() -> Tuple[List[str], List[str]]:
     conn = sqlite3.connect('urlshortener.db')
-    cursor1 = conn.cursor()
-    cursor1.execute("SELECT fk_link_id FROM Utilisateur_Lien WHERE fk_user_id='018794d4'")
-    results1 = cursor1.fetchall()
-    # print("PIZZA")
-    print(results1)
     cursor = conn.cursor()
-    cursor.execute("SELECT id, link FROM links WHERE id='"+results1+"'")
+    user_id = '018794d4'
+    cursor.execute(f"SELECT id, link FROM links WHERE id IN (SELECT fk_link_id FROM Utilisateur_Lien WHERE fk_user_id='{user_id}')")
     results = cursor.fetchall()
-    print("Resultat1 = " + results)
     conn.close()
     shortened_urls = [row[0] for row in results]
     origined_urls = [row[1] for row in results]
@@ -38,6 +33,7 @@ def get_shortened_urls_from_database_all() -> List[str]:
     cursor = conn.cursor()
     cursor.execute("SELECT id, link FROM links")
     results = cursor.fetchall()
+    #print(results)
     conn.close()
     shortened_urls = [row[0] for row in results]
     origined_urls = [row[1] for row in results]
