@@ -1,6 +1,6 @@
 import sqlite3
 from datetime import datetime, timedelta
-from typing import Any
+from typing import Any, Tuple, List
 
 
 class DatabaseHandler:
@@ -47,3 +47,26 @@ class DatabaseHandler:
 
     def close_connection(self):
         self.connection.close()
+
+    def get_shortened_urls_from_database_user(self) -> Tuple[List[str], List[str]]:
+        conn = sqlite3.connect('urlshortener.db')
+        cursor = conn.cursor()
+        user_id = '018794d4'
+        cursor.execute(
+            f"SELECT id, link FROM links WHERE id IN (SELECT fk_link_id FROM Utilisateur_Lien WHERE fk_user_id='{user_id}')")
+        results = cursor.fetchall()
+        conn.close()
+        shortened_urls = [row[0] for row in results]
+        origined_urls = [row[1] for row in results]
+        return shortened_urls, origined_urls
+
+    def get_shortened_urls_from_database_all(self) -> List[str]:
+        conn = sqlite3.connect('urlshortener.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, link FROM links")
+        results = cursor.fetchall()
+        # print(results)
+        conn.close()
+        shortened_urls = [row[0] for row in results]
+        origined_urls = [row[1] for row in results]
+        return shortened_urls, origined_urls
