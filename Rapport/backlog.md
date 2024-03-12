@@ -28,6 +28,10 @@ Description: Page Internet où l'utilisateur peut saisir une url, et affichage d
 Description: il faut gérer les erreurs dans l'application afin qu'elle ne crash pas  
 Pensez aux tests
 
+### Durée de vie des urls raccourcies paramétrable pour utilisateurs connectés
+
+Description: les utilisateurs peuvent sélectionner la durée de vie de l'url raccourcie
+
 ## En cours
 
 ### Connexion utilisateur
@@ -38,10 +42,6 @@ Découpage en 2 sous-tâches:
 
 * Stockage des infos + authentification
 * Formulaire de connexion et création de compte
-
-### Durée de vie des urls raccourcies paramétrable pour utilisateurs connectés
-
-Description: les utilisateurs peuvent sélectionner la durée de vie de l'url raccourcie
 
 ### Gestion des urls raccourcies par utilisateurs
 
