@@ -1,10 +1,6 @@
-
-from typing import Annotated, List, Tuple
-
 import datetime
 from sqlite3 import IntegrityError, OperationalError
 from typing import Annotated
-
 
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -12,12 +8,10 @@ from fastapi.templating import Jinja2Templates
 
 import databaseHandler
 import hasher
-import html
-
-import sqlite3
 
 app = FastAPI()
 templates = Jinja2Templates('templates')
+
 
 @app.get('/')
 async def home(request: Request):
@@ -83,6 +77,7 @@ async def print_all_urls(request: Request):
         context={'urls': urls}
     )
 
+
 @app.get("/{shortName}", response_class=RedirectResponse)
 async def redirect(shortName, request: Request):
     """
@@ -132,7 +127,6 @@ async def create(request: Request, url: Annotated[str, Form()], duration: Annota
             return templates.TemplateResponse(request=request, name='home.html', status_code=500)
         return HTMLResponse(content="erreur avec la bdd", status_code=500)
     return HTMLResponse(content="c'est pas bon", status_code=422)
-
 
 
 @app.post("/registerUser", response_class=HTMLResponse)
