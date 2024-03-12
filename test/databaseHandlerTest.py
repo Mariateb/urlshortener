@@ -14,11 +14,19 @@ class DatabaseHandlerTestCase(unittest.TestCase):
         self.databaseHandler = DatabaseHandler('test.db')
 
     def test(self):
-        index = self.databaseHandler.insertLink('http://test.com', 'test')
+        index = self.databaseHandler.insertLink('http://test.com', 'test', 20)
         self.assertEqual('test', index)
 
         link = self.databaseHandler.getLink('test')
         self.assertEqual('http://test.com', link)
+
+        self.databaseHandler.cursor.execute('SELECT * FROM links WHERE id = ?', ('test',))
+        res = list(self.databaseHandler.cursor.fetchall())
+
+        creationDate = datetime.strptime(res[0][2], '%Y-%m-%d %H:%M:%S.%f')
+        expirationDate = datetime.strptime(res[0][3], '%Y-%m-%d %H:%M:%S.%f')
+
+        self.assertEqual(creationDate + timedelta(days=20), expirationDate)
 
         yesterday = datetime.today() - timedelta(days=1)
         self.databaseHandler.cursor.execute('UPDATE links SET expires_at = ? WHERE id = ?',
