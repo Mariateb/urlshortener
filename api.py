@@ -18,9 +18,11 @@ async def home(request: Request):
     """
     Homepage
     """
-    if request.cookies.get("token"):
-        return templates.TemplateResponse(request=request, name='home-connected.html')
-    return templates.TemplateResponse(request=request, name='home.html')
+    return templates.TemplateResponse(
+        request=request,
+        name='home.html',
+        context={'isLogged': request.cookies.get("token") is not None}
+    )
 
 
 @app.get('/login')
@@ -41,7 +43,7 @@ async def disconnect():
 
 
 @app.get("/{shortName}", response_class=RedirectResponse)
-async def redirect(shortName):
+async def redirect(shortName, request: Request):
     """
     reroute to the website linked or send an error response
     :param request: request Object
@@ -57,7 +59,8 @@ async def redirect(shortName):
 
 
 @app.post("/create", response_class=HTMLResponse)
-async def create(request: Request, url: Annotated[str, Form()], duration: Annotated[int, Form()], size: Annotated[int, Form()]):
+async def create(request: Request, url: Annotated[str, Form()], duration: Annotated[int, Form()],
+                 size: Annotated[int, Form()]):
     """
     Allows to create a short link by giving in the post the URL as a parameter
 
@@ -99,7 +102,7 @@ async def registerUser(request: Request, login: Annotated[str, Form()], password
         expires = datetime.datetime.strftime(datetime.datetime.utcnow() + datetime.timedelta(seconds=max_age),
                                              "%a, %d-%b-%Y %H:%M:%S GMT")
 
-        theResponse = templates.TemplateResponse(request=request, name='home-connected.html')
+        theResponse = RedirectResponse(status_code=302, url="/")
         theResponse.set_cookie("token", str(token), max_age=max_age, expires=expires)
         return theResponse
     return templates.TemplateResponse(request=request, name='register.html')
@@ -109,12 +112,13 @@ async def registerUser(request: Request, login: Annotated[str, Form()], password
 async def authenticate(request: Request, login: Annotated[str, Form()], password: Annotated[str, Form()]):
     theDatabase = databaseHandler.DatabaseHandler()
     token = theDatabase.get_user(login, hasher.hash_password(password))
+    print(token)
     if token:
         max_age = 3600 * 24  # one day
         expires = datetime.datetime.strftime(datetime.datetime.utcnow() + datetime.timedelta(seconds=max_age),
                                              "%a, %d-%b-%Y %H:%M:%S GMT")
 
-        theResponse = templates.TemplateResponse(request=request, name='home-connected.html')
+        theResponse = RedirectResponse(status_code=302, url="/")
         theResponse.set_cookie("token", str(token), max_age=max_age, expires=expires)
         return theResponse
     return templates.TemplateResponse(request=request, name='login.html')
