@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request, Form, Cookie
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 
@@ -9,6 +9,13 @@ import hasher
 
 app = FastAPI()
 templates = Jinja2Templates('templates')
+
+
+def get_logged_user(cookie: Cookie):
+    theDatabase = databaseHandler.DatabaseHandler()
+    if 'Authorization' in cookie:
+        return theDatabase.getUserById(cookie['Authorization'])
+    return None
 
 
 @app.get('/')
