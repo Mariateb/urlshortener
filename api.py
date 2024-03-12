@@ -15,6 +15,9 @@ templates = Jinja2Templates('templates')
 
 @app.get('/')
 async def home(request: Request):
+    """
+    Homepage
+    """
     if request.cookies.get("token"):
         return templates.TemplateResponse(request=request, name='home-connected.html')
     return templates.TemplateResponse(request=request, name='home.html')
@@ -41,22 +44,26 @@ async def disconnect():
 async def redirect(shortName):
     """
     reroute to the website linked or send an error response
+    :param request: request Object
     :param shortName: the shortened name
     :return a redirection or the error response:
     """
     theDatabase = databaseHandler.DatabaseHandler()
+    theDatabase.delete_old_links()
     link = theDatabase.get_link(shortName)
     if link:
         return RedirectResponse(url=link)
-    return HTMLResponse(content="c'est pas bon : " + shortName, status_code=404)
+    return templates.TemplateResponse(request=request, name='not-found.html', status_code=404)
 
 
 @app.post("/create", response_class=HTMLResponse)
-async def create(request: Request, url: Annotated[str, Form()], size: Annotated[int, Form()]):
+async def create(request: Request, url: Annotated[str, Form()], duration: Annotated[int, Form()], size: Annotated[int, Form()]):
     """
-    allows to create a short link by giving in the post the URL as a parameter
+    Allows to create a short link by giving in the post the URL as a parameter
+
     :param request:
     :param url: the url to shorten
+    :param duration: the time period before we can delete the URL in days
     :param size: the size of the shortened url requested
     :return the response:
     """
@@ -65,7 +72,7 @@ async def create(request: Request, url: Annotated[str, Form()], size: Annotated[
     if url != "" and hashed:
         theDatabase = databaseHandler.DatabaseHandler()
         try:
-            if theDatabase.insert_link(url, hashed):
+            if theDatabase.insert_link(url, hashed, duration=duration):
                 return templates.TemplateResponse(
                     request=request,
                     name='shortened-url.html',
