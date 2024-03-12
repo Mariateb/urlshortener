@@ -48,9 +48,9 @@ Découpage en 2 sous-tâches:
 Description: associer url raccourcie à l'utilisateur et lui permettre de voir les urls qu'il a raccourcies et leur durée
 de vie
 
-## A faire
-
 ### Nombre de visites URL pour utilisateur connecté
 
 Description: Dans l'affichage des urls d'un utilisateur, afficher le nombre de fois que l'url a été visitée  
 Piste: lors de la redirection
+
+## A faire
