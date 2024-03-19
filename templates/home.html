@@ -33,6 +33,7 @@
         {% endif %}
     </div>
 
+
     <form class="justify-center flex flex-col gap-4 mt-6" method="post" action="/create">
         <label>
             <input type="text" name="url" placeholder="https://www.example.com"
@@ -43,46 +44,47 @@
         <input type="submit" style="align-self: center"
                class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4
                 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 my-2 w-fit" value="Raccourcir"/>
-        <fieldset>
-            <legend>Choisissez une durée (facultatif):</legend>
-            <div>
-                <input type="radio" id="1jour" name="duration" value="1"/>
-                <label for="1jour">1 jour</label>
-            </div>
-            <div>
-                <input type="radio" id="1sem" name="duration" value="7"/>
-                <label for="1sem">1 semaine</label>
-            </div>
-            <div>
-                <input type="radio" id="2sem" name="duration" value="14"/>
-                <label for="2sem">2 semaines</label>
-            </div>
-            <div>
-                <input type="radio" id="1mois" name="duration" value="30"/>
-                <label for="1mois">1 mois</label>
-            </div>
-            <div>
-                <input type="radio" id="2mois" name="duration" value="60"/>
-                <label for="2mois">2 mois</label>
-            </div>
-            <div>
-                <input type="radio" id="6mois" name="duration" value="180" checked/>
-                <label for="2mois">6 mois</label>
-            </div>
-            <div>
-                <input type="radio" id="1an" name="duration" value="365"/>
-                <label for="1an">1 an</label>
-            </div>
-            <div>
-                <input type="radio" id="5an" name="duration" value="1825"/>
-                <label for="5an">5 ans</label>
-            </div>
-            <div>
-                <input type="radio" id="10an" name="duration" value="3650"/>
-                <label for="10an">10 ans</label>
-            </div>
-        </fieldset>
-
+        {% if isLogged %}
+            <fieldset>
+                <legend>Choisissez une durée (facultatif):</legend>
+                <div>
+                    <input type="radio" id="1jour" name="duration" value="1"/>
+                    <label for="1jour">1 jour</label>
+                </div>
+                <div>
+                    <input type="radio" id="1sem" name="duration" value="7"/>
+                    <label for="1sem">1 semaine</label>
+                </div>
+                <div>
+                    <input type="radio" id="2sem" name="duration" value="14"/>
+                    <label for="2sem">2 semaines</label>
+                </div>
+                <div>
+                    <input type="radio" id="1mois" name="duration" value="30"/>
+                    <label for="1mois">1 mois</label>
+                </div>
+                <div>
+                    <input type="radio" id="2mois" name="duration" value="60"/>
+                    <label for="2mois">2 mois</label>
+                </div>
+                <div>
+                    <input type="radio" id="6mois" name="duration" value="180" checked/>
+                    <label for="2mois">6 mois</label>
+                </div>
+                <div>
+                    <input type="radio" id="1an" name="duration" value="365"/>
+                    <label for="1an">1 an</label>
+                </div>
+                <div>
+                    <input type="radio" id="5an" name="duration" value="1825"/>
+                    <label for="5an">5 ans</label>
+                </div>
+                <div>
+                    <input type="radio" id="10an" name="duration" value="3650"/>
+                    <label for="10an">10 ans</label>
+                </div>
+            </fieldset>
+        {% endif %}
     </form>
 </div>
 </body>

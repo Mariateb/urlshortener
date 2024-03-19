@@ -1,12 +1,8 @@
 import logging
 import sqlite3
 from datetime import datetime, timedelta
-from typing import Any, Tuple, List
 
-from typing import Any
 from fastapi import HTTPException
-
-import api
 
 
 class DatabaseHandler:
@@ -70,7 +66,7 @@ class DatabaseHandler:
             logging.error(e)
             raise HTTPException(status_code=500, detail="Failed to insert link")
 
-        if userId != None :
+        if userId != None:
             self.cursor.execute("""
                     INSERT INTO usersLink VALUES (?, ?)""",
                                 (userId,
@@ -112,42 +108,29 @@ class DatabaseHandler:
 
     def create_user(self, login, password):
         try:
-            self.cursor.execute("""
-            INSERT INTO users VALUES (?, ?)""",
-                            (login,
-                             password))
+            self.cursor.execute("INSERT INTO users VALUES (?, ?)", (login, password))
         except sqlite3.IntegrityError:
             self.connection.rollback()
             return None
         self.connection.commit()
         return self.cursor.lastrowid
 
-    def get_user(self, login, password):
-        self.cursor.execute("SELECT login FROM users WHERE login = ? AND password = ?", (login,password,))
+    def get_user(self, login):
+        self.cursor.execute("SELECT login FROM users WHERE login = ?", (login,))
         return self.cursor.fetchone()
 
+    def get_password(self, login):
+        self.cursor.execute("SELECT password FROM users WHERE login = ?", (login,))
+        return self.cursor.fetchone()
 
-    def get_shortened_urls_from_database_user(self,cookie) -> Tuple[List[str], List[str]]:
-        conn = sqlite3.connect('urlshortener.db')
-        cursor = conn.cursor()
-        user_id = cookie
-        cursor.execute(
-            "SELECT id, link FROM links WHERE id IN ( SELECT id_link FROM usersLink WHERE login_users = ? )",(user_id,)
-        )
-        results = cursor.fetchall()
-        conn.close()
-        shortened_urls = [row[0] for row in results]
-        origined_urls = [row[1] for row in results]
-        return shortened_urls, origined_urls
+    def get_user_urls(self, user):
+        if user is None and 'login' not in user:
+            return []
+        self.cursor.execute("SELECT id, link FROM links")
 
+        return self.cursor.fetchall()
 
-    def get_shortened_urls_from_database_all(self) -> List[str]:
-        conn = sqlite3.connect('urlshortener.db')
-        cursor = conn.cursor()
-        cursor.execute("SELECT id, link FROM links")
-        results = cursor.fetchall()
-        # print(results)
-        conn.close()
-        shortened_urls = [row[0] for row in results]
-        origined_urls = [row[1] for row in results]
-        return shortened_urls, origined_urls
+    def get_all_urls(self):
+        self.cursor.execute("SELECT id, link FROM links")
+
+        return self.cursor.fetchall()
