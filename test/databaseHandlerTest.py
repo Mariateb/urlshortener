@@ -28,6 +28,8 @@ class DatabaseHandlerTestCase(unittest.TestCase):
         self.databaseHandler.deleteOldLinks()
         self.assertIsNone(self.databaseHandler.getLink('test'))
 
+        self.assertIsNone(self.databaseHandler.deleteLink("urlImpossible"))
+
 
 def clearTestDatabase():
     db = sqlite3.connect('test.db')

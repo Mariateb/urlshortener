@@ -1,3 +1,4 @@
+import sqlite3
 from typing import Annotated
 
 from fastapi import FastAPI, Request, Form
@@ -54,3 +55,11 @@ async def create(request: Request, url: Annotated[str, Form()], duration: Annota
             return templates.TemplateResponse(
                 request=request, name='shortened-url.html', context={'url': 'http://localhost:8000/' + hashed})
     return HTMLResponse(content="c'est pas bon", status_code=422)
+
+
+@app.post("/delete", response_class=HTMLResponse)
+async def delete(request: Request, url: Annotated[str, Form()]):
+    myDatabase = databaseHandler.DatabaseHandler()
+    if myDatabase.deleteLink(url):
+        return RedirectResponse("/")
+    return templates.TemplateResponse(request=request, name='not-found.html', status_code=404)
