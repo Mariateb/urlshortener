@@ -48,6 +48,10 @@ Description: les utilisateurs peuvent sélectionner la durée de vie de l'url ra
 Description: associer url raccourcie à l'utilisateur et lui permettre de voir les urls qu'il a raccourcies et leur durée
 de vie
 
+### POC Génération aléatoire
+
+Description: Faire un comparatif entre la génération d'URL raccourcies par hashage ou par génération aléatoire : comparer le nombre de collisions et le temps d'exécution.
+
 ## A faire
 
 ### Nombre de visites URL pour utilisateur connecté
