@@ -1,4 +1,3 @@
-import sqlite3
 from typing import Annotated
 
 from fastapi import FastAPI, Request, Form
