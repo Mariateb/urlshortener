@@ -117,7 +117,6 @@ class DatabaseHandler:
         value = links[0][0]
         return value
 
-    def deleteOldLinks(self) -> None:
     def delete_old_links(self) -> None:
         current_date = datetime.now()
         try:
