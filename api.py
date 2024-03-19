@@ -1,7 +1,6 @@
 from sqlite3 import IntegrityError, OperationalError
 from typing import Annotated
 
-from cryptography.fernet import Fernet
 from fastapi import FastAPI, Request, Form, Cookie
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -12,16 +11,19 @@ import hasher
 app = FastAPI()
 templates = Jinja2Templates('templates')
 
-cipher_suite = Fernet('ECMH3_SwZHVz2POSJoNQkYWViWZX_7rkSk51YDWuX6c=')
-
 
 def get_logged_user(cookie: Cookie):
     theDatabase = databaseHandler.DatabaseHandler()
 
     if cookie is not None:
-        return theDatabase.get_user(str(cipher_suite.decrypt(cookie)))
+        return theDatabase.get_user(cookie)
 
     return None
+
+
+@app.get('/user')
+async def user(request: Request):
+    return get_logged_user(request.cookies.get('Authorization')), request.cookies.get('Authorization')
 
 
 @app.get('/')
@@ -110,6 +112,7 @@ async def create(request: Request, url: Annotated[str, Form()], duration: Annota
     myHasher = hasher.Hasher()
     hashed = myHasher.hash_string(url, size)
     user = get_logged_user(request.cookies.get('Authorization'))
+    print(user, request.cookies.get('Authorization'))
     if url != "" and hashed:
         theDatabase = databaseHandler.DatabaseHandler()
         try:
@@ -147,7 +150,7 @@ def login(request: Request, login: Annotated[str, Form()], password: Annotated[s
         })
 
     response = RedirectResponse("/", status_code=302)
-    response.set_cookie(key="Authorization", value=str(cipher_suite.encrypt(login.encode())))
+    response.set_cookie(key="Authorization", value=login)
 
     return response
 
@@ -161,6 +164,6 @@ def register(request: Request, login: Annotated[str, Form()], password: Annotate
         })
     theDatabase.create_user(login, hasher.hash_password(password))
     response = RedirectResponse("/", status_code=302)
-    response.set_cookie(key="Authorization", value=str(cipher_suite.encrypt(login.encode())))
+    response.set_cookie(key="Authorization", value=login)
 
     return response

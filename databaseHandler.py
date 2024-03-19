@@ -35,8 +35,7 @@ class DatabaseHandler:
 
         self.connection.commit()
 
-    def insert_link(self, link: str, hashedLink: str, userId, duration: int = 180) -> str | None:
-
+    def insert_link(self, link: str, hashedLink: str, user, duration: int = 180) -> str | None:
         if duration <= 0:
             raise HTTPException(status_code=500, detail="Failed to insert link : Invalid duration")
 
@@ -66,10 +65,10 @@ class DatabaseHandler:
             logging.error(e)
             raise HTTPException(status_code=500, detail="Failed to insert link")
 
-        if userId != None:
+        if user is not None:
             self.cursor.execute("""
                     INSERT INTO usersLink VALUES (?, ?)""",
-                                (userId,
+                                (user[0],
                                  hashedLink))
             try:
                 self.connection.commit()
@@ -124,9 +123,11 @@ class DatabaseHandler:
         return self.cursor.fetchone()
 
     def get_user_urls(self, user):
-        if user is None and 'login' not in user:
+        if user is None:
             return []
-        self.cursor.execute("SELECT id, link FROM links")
+        self.cursor.execute("""
+        SELECT l.id, l.link FROM links l JOIN usersLink ul ON ul.id_link = l.id WHERE ul.login_users = ?
+        """, (user[0],))
 
         return self.cursor.fetchall()
 
