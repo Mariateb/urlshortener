@@ -17,8 +17,10 @@ cipher_suite = Fernet('ECMH3_SwZHVz2POSJoNQkYWViWZX_7rkSk51YDWuX6c=')
 
 def get_logged_user(cookie: Cookie):
     theDatabase = databaseHandler.DatabaseHandler()
-    if 'Authorization' in cookie:
-        return theDatabase.get_user(str(cipher_suite.decrypt(cookie['Authorization'])))
+
+    if cookie is not None:
+        return theDatabase.get_user(str(cipher_suite.decrypt(cookie)))
+
     return None
 
 
@@ -30,7 +32,7 @@ async def home(request: Request):
     return templates.TemplateResponse(
         request=request,
         name='home.html',
-        context={'isLogged': request.cookies.get("token") is not None}
+        context={'isLogged': request.cookies.get('Authorization') is not None}
     )
 
 
@@ -63,6 +65,8 @@ async def redirect(shortName, request: Request):
     theDatabase.delete_old_links()
     link = theDatabase.get_link(shortName)
     if link:
+        if not link.startswith("https://") and not link.startswith("http://"):
+            link = "https://" + link
         return RedirectResponse(url=link)
     return templates.TemplateResponse(request=request, name='not-found.html', status_code=404)
 
@@ -112,7 +116,7 @@ def login(request: Request, login: Annotated[str, Form()], password: Annotated[s
             'message': "L'utilisateur n'existe pas"
         })
 
-    if theDatabase.get_password(login) != hasher.hash_password(password):
+    if theDatabase.get_password(login)[0] != hasher.hash_password(password):
         return templates.TemplateResponse(request=request, name='login.html', status_code=401, context={
             'message': "Mot de passe incorrect"
         })
@@ -130,7 +134,7 @@ def register(request: Request, login: Annotated[str, Form()], password: Annotate
         return templates.TemplateResponse(request=request, name='register.html', context={
             'message': "Identifiant déjà pris"
         })
-    user = theDatabase.create_user(login, password)
+    theDatabase.create_user(login, hasher.hash_password(password))
     response = RedirectResponse("/", status_code=302)
     response.set_cookie(key="Authorization", value=str(cipher_suite.encrypt(login.encode())))
 
