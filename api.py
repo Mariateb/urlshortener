@@ -85,7 +85,7 @@ async def create(request: Request, url: Annotated[str, Form()], duration: Annota
     hashed = myHasher.hash_string(url, size)
     if url != "" and hashed:
         theDatabase = databaseHandler.DatabaseHandler()
-        if theDatabase.insertLink(url, hashed, duration=duration):
+        if theDatabase.insert_link(url, hashed, duration=duration):
             return templates.TemplateResponse(
                 request=request, name='shortened-url.html', context={'url': 'http://localhost:8000/' + hashed})
     return HTMLResponse(content="c'est pas bon", status_code=422)
