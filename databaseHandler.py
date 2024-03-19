@@ -23,10 +23,19 @@ class DatabaseHandler:
             login TEXT PRIMARY KEY,
             password TEXT)
             """)
+        self.cursor.execute("""
+            create table IF NOT EXISTS usersLink(
+                login_users text
+                    constraint usersLink_users_login_fk
+                        references users,
+                id_link     text
+                    constraint usersLink_links_id_fk
+                        references links
+            )""")
 
         self.connection.commit()
 
-    def insert_link(self, link: str, hashedLink: str, duration: int = 180) -> str | None:
+    def insert_link(self, link: str, hashedLink: str, user, duration: int = 180) -> str | None:
         if duration <= 0:
             raise HTTPException(status_code=500, detail="Failed to insert link : Invalid duration")
 
@@ -55,6 +64,19 @@ class DatabaseHandler:
             self.resetConnection()
             logging.error(e)
             raise HTTPException(status_code=500, detail="Failed to insert link")
+
+        if user is not None:
+            self.cursor.execute("""
+                    INSERT INTO usersLink VALUES (?, ?)""",
+                                (user[0],
+                                 hashedLink))
+            try:
+                self.connection.commit()
+            except sqlite3.OperationalError as e:
+                self.resetConnection()
+                logging.error(e)
+                raise HTTPException(status_code=500, detail="Failed to insert link")
+
         return hashedLink
 
     def delete_old_links(self) -> None:
@@ -99,3 +121,17 @@ class DatabaseHandler:
     def get_password(self, login):
         self.cursor.execute("SELECT password FROM users WHERE login = ?", (login,))
         return self.cursor.fetchone()
+
+    def get_user_urls(self, user):
+        if user is None:
+            return []
+        self.cursor.execute("""
+        SELECT l.id, l.link FROM links l JOIN usersLink ul ON ul.id_link = l.id WHERE ul.login_users = ?
+        """, (user[0],))
+
+        return self.cursor.fetchall()
+
+    def get_all_urls(self):
+        self.cursor.execute("SELECT id, link FROM links")
+
+        return self.cursor.fetchall()
