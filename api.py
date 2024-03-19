@@ -108,10 +108,11 @@ async def create(request: Request, url: Annotated[str, Form()], duration: Annota
     """
     myHasher = hasher.Hasher()
     hashed = myHasher.hash_string(url, size)
+    cookie = request.cookies.get("token")
     if url != "" and hashed:
         theDatabase = databaseHandler.DatabaseHandler()
         try:
-            if theDatabase.insert_link(url, hashed, duration=duration):
+            if theDatabase.insert_link(url, hashed, cookie, duration=duration):
                 return templates.TemplateResponse(
                     request=request,
                     name='shortened-url.html',

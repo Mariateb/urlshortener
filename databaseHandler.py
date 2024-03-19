@@ -29,9 +29,6 @@ class DatabaseHandler:
             """)
         self.cursor.execute("""
             create table IF NOT EXISTS usersLink(
-                id text
-                    constraint usersLink_pk
-                        primary key,
                 login_users text
                     constraint usersLink_users_login_fk
                         references users,
@@ -42,7 +39,8 @@ class DatabaseHandler:
 
         self.connection.commit()
 
-    def insert_link(self, link: str, hashedLink: str, duration: int = 180) -> str | None:
+    def insert_link(self, link: str, hashedLink: str, userId, duration: int = 180) -> str | None:
+
         if duration <= 0:
             raise HTTPException(status_code=500, detail="Failed to insert link : Invalid duration")
 
@@ -71,6 +69,19 @@ class DatabaseHandler:
             self.resetConnection()
             logging.error(e)
             raise HTTPException(status_code=500, detail="Failed to insert link")
+
+        if userId != None :
+            self.cursor.execute("""
+                    INSERT INTO usersLink VALUES (?, ?)""",
+                                (userId,
+                                 hashedLink))
+            try:
+                self.connection.commit()
+            except sqlite3.OperationalError as e:
+                self.resetConnection()
+                logging.error(e)
+                raise HTTPException(status_code=500, detail="Failed to insert link")
+
         return hashedLink
 
     def delete_old_links(self) -> None:
