@@ -1,8 +1,9 @@
 import logging
 import sqlite3
 from datetime import datetime, timedelta
-from typing import Any
+
 from fastapi import HTTPException
+
 
 class DatabaseHandler:
 
@@ -84,16 +85,17 @@ class DatabaseHandler:
 
     def create_user(self, login, password):
         try:
-            self.cursor.execute("""
-            INSERT INTO users VALUES (?, ?)""",
-                            (login,
-                             password))
+            self.cursor.execute("INSERT INTO users VALUES (?, ?)", (login, password))
         except sqlite3.IntegrityError:
             self.connection.rollback()
             return None
         self.connection.commit()
         return self.cursor.lastrowid
 
-    def get_user(self, login, password):
-        self.cursor.execute("SELECT login FROM users WHERE login = ? AND password = ?", (login,password,))
+    def get_user(self, login):
+        self.cursor.execute("SELECT login FROM users WHERE login = ?", (login,))
+        return self.cursor.fetchone()
+
+    def get_password(self, login):
+        self.cursor.execute("SELECT password FROM users WHERE login = ?", (login,))
         return self.cursor.fetchone()
