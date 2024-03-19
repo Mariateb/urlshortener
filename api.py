@@ -38,7 +38,7 @@ async def login(request: Request):
 
 
 @app.get('/register')
-async def login(request: Request):
+async def register(request: Request):
     return templates.TemplateResponse(request=request, name='register.html')
 
 

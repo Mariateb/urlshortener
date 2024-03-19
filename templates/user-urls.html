@@ -75,6 +75,12 @@
                 <tr>  <!-- Correction ici -->
                     <td class="border border-slate-700 ">{{ url[0] }}</td>
                     <td class="border border-slate-700 "><a href="{{ url[1] }}">{{ url[1] }}</a></td>
+                    <td class="border border-slate-700 ">
+                        <form class="justify-center" method="post" action="/delete">
+                            <input name="url" value="{{ url[0] }}" hidden="hidden"/>
+                            <button type="submit">Supprimer</button>
+                        </form>
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>
