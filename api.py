@@ -6,6 +6,7 @@ from fastapi.templating import Jinja2Templates
 
 import databaseHandler
 import hasher
+import randomGenerator
 
 app = FastAPI()
 templates = Jinja2Templates('templates')
@@ -47,11 +48,12 @@ async def create(request: Request, url: Annotated[str, Form()], duration: Annota
     :param size: the size of the shortened url requested
     :return the response:
     """
-    myHasher = hasher.Hasher()
-    hashed = myHasher.hashString(url, size)
-    if url != "" and hashed:
+
+    myGenerator = randomGenerator.RandomGenerator()
+    shortened = myGenerator.generate(size)
+    if url != "" and shortened:
         theDatabase = databaseHandler.DatabaseHandler()
-        if theDatabase.insertLink(url, hashed, duration=duration):
+        if theDatabase.insertLink(url, shortened, duration=duration):
             return templates.TemplateResponse(
-                request=request, name='shortened-url.html', context={'url': 'http://localhost:8000/' + hashed})
+                request=request, name='shortened-url.html', context={'url': 'http://localhost:8000/' + shortened})
     return HTMLResponse(content="c'est pas bon", status_code=422)
