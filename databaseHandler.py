@@ -74,6 +74,21 @@ class DatabaseHandler:
             logging.error(e)
             return
 
+    def getVisits(self, hashedLink: str) -> int:
+        try:
+            self.cursor.execute('SELECT visits FROM links WHERE id = ?', (hashedLink,))
+        except sqlite3.OperationalError:
+            self.resetConnection()
+            return
+
+        links = list(self.cursor.fetchall())
+
+        if len(links) == 0:
+            raise HTTPException(status_code=500, detail="Failed to update visitor count : Invalid link")
+
+        value = links[0][0]
+        return value
+
     def deleteOldLinks(self) -> None:
         current_date = datetime.now()
         try:
