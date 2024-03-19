@@ -48,19 +48,6 @@ async def disconnect():
     theResponse.delete_cookie('Authorization')
     return theResponse
 
-
-@app.get('/urls', response_class=HTMLResponse)
-async def get_all_urls(request: Request):
-    theDatabase = databaseHandler.DatabaseHandler()
-    urls = theDatabase.get_all_urls()
-
-    return templates.TemplateResponse(
-        request=request,
-        name='urls.html',
-        context={'urls': urls}
-    )
-
-
 @app.get("/user/urls", response_class=HTMLResponse)
 async def get_user_urls(request: Request):
     theDatabase = databaseHandler.DatabaseHandler()
