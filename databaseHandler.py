@@ -15,7 +15,8 @@ class DatabaseHandler:
             id TEXT PRIMARY KEY,
             link TEXT,
             created_at DATETIME,
-            expires_at DATETIME)
+            expires_at DATETIME,
+            visits INTEGER)
             """)
 
         self.connection.commit()
@@ -42,7 +43,8 @@ class DatabaseHandler:
                             (hashedLink,
                              link,
                              created_at,
-                             expires_at))
+                             expires_at,
+                             0))
         try:
             self.connection.commit()
         except sqlite3.OperationalError as e:
@@ -50,6 +52,24 @@ class DatabaseHandler:
             logging.error(e)
             raise HTTPException(status_code=500, detail="Failed to insert link")
         return hashedLink
+
+    def addVisitor(self, hashedLink: str):
+        try:
+            self.cursor.execute("SELECT id FROM links WHERE id = ?", (hashedLink,))
+        except sqlite3.OperationalError:
+            self.resetConnection()
+            return
+        links = self.cursor.fetchall()
+
+        if len(links) == 0:
+            raise HTTPException(status_code=500, detail="Failed to update visitor count : Invalid link")
+
+        try:
+            self.cursor.execute("UPDATE links SET visits = visits + 1 WHERE id = ?", (hashedLink,))
+        except sqlite3.OperationalError as e:
+            self.resetConnection()
+            logging.error(e)
+            return
 
     def deleteOldLinks(self) -> None:
         current_date = datetime.now()
