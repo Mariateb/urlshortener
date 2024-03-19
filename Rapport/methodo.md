@@ -32,8 +32,12 @@ ce qu'il reste à faire et de se mettre d'accord sur l'implémentation.
 Nous avons utilisé Git pour gérer le projet. Nous avons décidé que chaque ticket avait sa branche.
 Lorsque le développement est fini le scrum master relit la pull request (PR). Si c'est ok elle est mergée,
 sinon elle est renvoyée en correction avec quelques commentaires pour expliquer ce qui ne va pas.  
-Conditions pour qu'une PR soit validée: 
+Conditions pour qu'une PR soit validée:
+
 - code propre
 - respect des conventions de nommage
-- respect de l'architecture de l'application  
+- respect de l'architecture de l'application
+
+On a tenté de faire des rétro/review a la fin des sprints mais c'était compliqué de savoir à quel moment il se
+terminait donc c'est fait à la va-vite.  
 
