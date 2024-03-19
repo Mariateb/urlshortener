@@ -1,5 +1,11 @@
 # URL SHORTENER
    
+## Membre du groupe
+- Quentin JUILLIARD
+- Jérémie LOHYER
+- Sabri MOUSSA
+- Yacine TROUSSELLE
+
 ## Description   
 Ce projet permet de raccourcir une URL.    
 L'utilisateur a accès à un formulaire où il peut entrer une URL et reçoit une clé. Grâce à cette clé, il peut être redirigé sur l'URL raccourcie.   
