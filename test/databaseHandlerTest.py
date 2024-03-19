@@ -22,7 +22,7 @@ class DatabaseHandlerTestCase(unittest.TestCase):
 
         self.databaseHandler.cursor.execute('SELECT * FROM links WHERE id = ?', ('test',))
         res = list(self.databaseHandler.cursor.fetchall())
-        print(res)
+
         creationDate = datetime.strptime(res[0][2], '%Y-%m-%d %H:%M:%S.%f')
         expirationDate = datetime.strptime(res[0][3], '%Y-%m-%d %H:%M:%S.%f')
 

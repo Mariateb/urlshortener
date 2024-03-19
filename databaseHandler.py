@@ -63,7 +63,6 @@ class DatabaseHandler:
 
         links = list(self.cursor.fetchall())
 
-        print(links)
         if len(links) == 0:
             raise HTTPException(status_code=500, detail="Failed to update visitor count : Invalid link")
 
