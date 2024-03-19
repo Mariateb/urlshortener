@@ -38,13 +38,14 @@ class DatabaseHandler:
         if len(links) > 0:
             return hashedLink
 
+        visits = 0
         self.cursor.execute("""
-        INSERT INTO links VALUES (?, ?, ?, ?)""",
+        INSERT INTO links VALUES (?, ?, ?, ?, ?)""",
                             (hashedLink,
                              link,
                              created_at,
                              expires_at,
-                             0))
+                             visits))
         try:
             self.connection.commit()
         except sqlite3.OperationalError as e:
@@ -55,17 +56,20 @@ class DatabaseHandler:
 
     def addVisitor(self, hashedLink: str):
         try:
-            self.cursor.execute("SELECT id FROM links WHERE id = ?", (hashedLink,))
+            self.cursor.execute('SELECT * FROM links WHERE id = ?', (hashedLink,))
         except sqlite3.OperationalError:
             self.resetConnection()
             return
-        links = self.cursor.fetchall()
 
+        links = list(self.cursor.fetchall())
+
+        print(links)
         if len(links) == 0:
             raise HTTPException(status_code=500, detail="Failed to update visitor count : Invalid link")
 
         try:
             self.cursor.execute("UPDATE links SET visits = visits + 1 WHERE id = ?", (hashedLink,))
+            self.connection.commit()
         except sqlite3.OperationalError as e:
             self.resetConnection()
             logging.error(e)

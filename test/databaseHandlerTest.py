@@ -22,20 +22,30 @@ class DatabaseHandlerTestCase(unittest.TestCase):
 
         self.databaseHandler.cursor.execute('SELECT * FROM links WHERE id = ?', ('test',))
         res = list(self.databaseHandler.cursor.fetchall())
-
+        print(res)
         creationDate = datetime.strptime(res[0][2], '%Y-%m-%d %H:%M:%S.%f')
         expirationDate = datetime.strptime(res[0][3], '%Y-%m-%d %H:%M:%S.%f')
 
         self.assertEqual(creationDate + timedelta(days=20), expirationDate)
+
+        expectedVisits = 0
+        self.assertEqual(res[0][4], expectedVisits)
 
         yesterday = datetime.today() - timedelta(days=1)
         self.databaseHandler.cursor.execute('UPDATE links SET expires_at = ? WHERE id = ?',
                                             (yesterday, 'test'))
         self.databaseHandler.connection.commit()
 
+        expectedVisits = 1
+        self.databaseHandler.addVisitor('test')
+
+        self.databaseHandler.cursor.execute('SELECT * FROM links WHERE id = ?', ('test',))
+        res = list(self.databaseHandler.cursor.fetchall())
+
+        self.assertEqual(res[0][4], expectedVisits)
+
         self.databaseHandler.deleteOldLinks()
         self.assertIsNone(self.databaseHandler.getLink('test'))
-
 
 def clearTestDatabase():
     db = sqlite3.connect('test.db')
