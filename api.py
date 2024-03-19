@@ -1,6 +1,5 @@
 from typing import Annotated
 
-from cryptography.fernet import Fernet
 from fastapi import FastAPI, Request, Form, Cookie
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -11,14 +10,12 @@ import hasher
 app = FastAPI()
 templates = Jinja2Templates('templates')
 
-cipher_suite = Fernet('ECMH3_SwZHVz2POSJoNQkYWViWZX_7rkSk51YDWuX6c=')
-
 
 def get_logged_user(cookie: Cookie):
     theDatabase = databaseHandler.DatabaseHandler()
 
     if cookie is not None:
-        return theDatabase.get_user(str(cipher_suite.decrypt(cookie)))
+        return theDatabase.get_user(cookie)
 
     return None
 
@@ -52,6 +49,30 @@ async def disconnect():
     return theResponse
 
 
+@app.get('/urls', response_class=HTMLResponse)
+async def get_all_urls(request: Request):
+    theDatabase = databaseHandler.DatabaseHandler()
+    urls = theDatabase.get_all_urls()
+
+    return templates.TemplateResponse(
+        request=request,
+        name='urls.html',
+        context={'urls': urls}
+    )
+
+
+@app.get("/user/urls", response_class=HTMLResponse)
+async def get_user_urls(request: Request):
+    theDatabase = databaseHandler.DatabaseHandler()
+    urls = theDatabase.get_user_urls(get_logged_user(request.cookies.get('Authorization')))
+
+    return templates.TemplateResponse(
+        request=request,
+        name='user-urls.html',
+        context={'urls': urls}
+    )
+
+
 @app.get("/{shortName}", response_class=RedirectResponse)
 async def redirect(shortName, request: Request):
     """
@@ -83,9 +104,11 @@ async def create(request: Request, url: Annotated[str, Form()], duration: Annota
     """
     myHasher = hasher.Hasher()
     hashed = myHasher.hash_string(url, size)
+    user = get_logged_user(request.cookies.get('Authorization'))
+    print(user, request.cookies.get('Authorization'))
     if url != "" and hashed:
         theDatabase = databaseHandler.DatabaseHandler()
-        if theDatabase.insert_link(url, hashed, duration=duration):
+        if theDatabase.insert_link(url, hashed, user, duration=duration):
             return templates.TemplateResponse(
                 request=request, name='shortened-url.html', context={'url': 'http://localhost:8000/' + hashed})
     return HTMLResponse(content="c'est pas bon", status_code=422)
@@ -107,7 +130,7 @@ def login(request: Request, login: Annotated[str, Form()], password: Annotated[s
         })
 
     response = RedirectResponse("/", status_code=302)
-    response.set_cookie(key="Authorization", value=str(cipher_suite.encrypt(login.encode())))
+    response.set_cookie(key="Authorization", value=login)
 
     return response
 
@@ -121,6 +144,6 @@ def register(request: Request, login: Annotated[str, Form()], password: Annotate
         })
     theDatabase.create_user(login, hasher.hash_password(password))
     response = RedirectResponse("/", status_code=302)
-    response.set_cookie(key="Authorization", value=str(cipher_suite.encrypt(login.encode())))
+    response.set_cookie(key="Authorization", value=login)
 
     return response
