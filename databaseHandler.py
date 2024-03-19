@@ -143,4 +143,10 @@ class DatabaseHandler:
             self.resetConnection()
             return False
         self.connection.commit()
+        try:
+            self.cursor.execute("DELETE FROM usersLink WHERE id_link = ?", (url,))
+        except sqlite3.Error as e:
+            self.resetConnection()
+            return True
+        self.connection.commit()
         return True

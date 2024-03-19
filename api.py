@@ -147,3 +147,10 @@ def register(request: Request, login: Annotated[str, Form()], password: Annotate
     response.set_cookie(key="Authorization", value=login)
 
     return response
+
+@app.post("/delete")
+def delete(request: Request, url: Annotated[str, Form()]):
+    theDatabase = databaseHandler.DatabaseHandler()
+    if theDatabase.delete_link(url):
+        return RedirectResponse(url="/user/urls", status_code=302)
+    return HTMLResponse(content="c'est pas bon", status_code=422)
