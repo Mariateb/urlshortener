@@ -14,10 +14,10 @@ class DatabaseHandlerTestCase(unittest.TestCase):
         self.databaseHandler = DatabaseHandler('test.db')
 
     def test(self):
-        index = self.databaseHandler.insertLink('http://test.com', 'test', 20)
+        index = self.databaseHandler.insert_link('http://test.com', 'test', 20)
         self.assertEqual('test', index)
 
-        link = self.databaseHandler.getLink('test')
+        link = self.databaseHandler.get_link('test')
         self.assertEqual('http://test.com', link)
 
         self.databaseHandler.cursor.execute('SELECT * FROM links WHERE id = ?', ('test',))
@@ -33,10 +33,10 @@ class DatabaseHandlerTestCase(unittest.TestCase):
                                             (yesterday, 'test'))
         self.databaseHandler.connection.commit()
 
-        self.databaseHandler.deleteOldLinks()
-        self.assertIsNone(self.databaseHandler.getLink('test'))
+        self.databaseHandler.delete_old_links()
+        self.assertIsNone(self.databaseHandler.get_link('test'))
 
-        self.assertIsNone(self.databaseHandler.deleteLink("urlImpossible"))
+        self.assertEqual(True, self.databaseHandler.delete_link("urlImpossible"))
 
 
 def clearTestDatabase():

@@ -67,7 +67,7 @@ class DatabaseHandler:
         expired_links = self.cursor.fetchall()
 
         for link in expired_links:
-            self.deleteLink(link[0])
+            self.delete_link(link[0])
         self.connection.commit()
 
     def get_link(self, hashing) -> str | None:
@@ -99,10 +99,10 @@ class DatabaseHandler:
         self.cursor.execute("SELECT password FROM users WHERE login = ?", (login,))
         return self.cursor.fetchone()
 
-    def deleteLink(self, url):
+    def delete_link(self, url):
         try:
             self.cursor.execute("DELETE FROM links WHERE id = ?", (url,))
-        except sqlite3.OperationalError as e:
+        except sqlite3.Error as e:
             self.resetConnection()
             return False
         self.connection.commit()
