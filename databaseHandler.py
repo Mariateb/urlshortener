@@ -90,7 +90,7 @@ class DatabaseHandler:
         expired_links = self.cursor.fetchall()
 
         for link in expired_links:
-            self.cursor.execute("DELETE FROM links WHERE id = ?", (link[0],))
+            self.delete_link(link[0])
         self.connection.commit()
 
     def get_link(self, hashing) -> str | None:
@@ -135,3 +135,18 @@ class DatabaseHandler:
         self.cursor.execute("SELECT id, link FROM links")
 
         return self.cursor.fetchall()
+
+    def delete_link(self, url):
+        try:
+            self.cursor.execute("DELETE FROM links WHERE id = ?", (url,))
+        except sqlite3.Error as e:
+            self.resetConnection()
+            return False
+        self.connection.commit()
+        try:
+            self.cursor.execute("DELETE FROM usersLink WHERE id_link = ?", (url,))
+        except sqlite3.Error as e:
+            self.resetConnection()
+            return True
+        self.connection.commit()
+        return True

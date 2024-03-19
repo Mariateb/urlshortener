@@ -1,4 +1,3 @@
-from sqlite3 import IntegrityError, OperationalError
 from typing import Annotated
 
 from fastapi import FastAPI, Request, Form, Cookie
@@ -21,11 +20,6 @@ def get_logged_user(cookie: Cookie):
     return None
 
 
-@app.get('/user')
-async def user(request: Request):
-    return get_logged_user(request.cookies.get('Authorization')), request.cookies.get('Authorization')
-
-
 @app.get('/')
 async def home(request: Request):
     """
@@ -44,7 +38,7 @@ async def login(request: Request):
 
 
 @app.get('/register')
-async def login(request: Request):
+async def register(request: Request):
     return templates.TemplateResponse(request=request, name='register.html')
 
 
@@ -53,19 +47,6 @@ async def disconnect():
     theResponse = RedirectResponse(url='/')
     theResponse.delete_cookie('Authorization')
     return theResponse
-
-
-@app.get('/urls', response_class=HTMLResponse)
-async def get_all_urls(request: Request):
-    theDatabase = databaseHandler.DatabaseHandler()
-    urls = theDatabase.get_all_urls()
-
-    return templates.TemplateResponse(
-        request=request,
-        name='urls.html',
-        context={'urls': urls}
-    )
-
 
 @app.get("/user/urls", response_class=HTMLResponse)
 async def get_user_urls(request: Request):
@@ -98,8 +79,7 @@ async def redirect(shortName, request: Request):
 
 
 @app.post("/create", response_class=HTMLResponse)
-async def create(request: Request, url: Annotated[str, Form()], duration: Annotated[int, Form()],
-                 size: Annotated[int, Form()]):
+async def create(request: Request, url: Annotated[str, Form()], duration: Annotated[int, Form()], size: Annotated[int, Form()]):
     """
     Allows to create a short link by giving in the post the URL as a parameter
 
@@ -115,22 +95,9 @@ async def create(request: Request, url: Annotated[str, Form()], duration: Annota
     print(user, request.cookies.get('Authorization'))
     if url != "" and hashed:
         theDatabase = databaseHandler.DatabaseHandler()
-        try:
-            if theDatabase.insert_link(url, hashed, user, duration=duration):
-                return templates.TemplateResponse(
-                    request=request,
-                    name='shortened-url.html',
-                    context={'url': 'http://localhost:8000/' + hashed}
-                )
-        except IntegrityError:
+        if theDatabase.insert_link(url, hashed, user, duration=duration):
             return templates.TemplateResponse(
-                request=request,
-                name='shortened-url.html',
-                context={'url': 'http://localhost:8000/' + hashed}
-            )
-        except OperationalError:
-            return templates.TemplateResponse(request=request, name='home.html', status_code=500)
-        return HTMLResponse(content="erreur avec la bdd", status_code=500)
+                request=request, name='shortened-url.html', context={'url': 'http://localhost:8000/' + hashed})
     return HTMLResponse(content="c'est pas bon", status_code=422)
 
 
@@ -167,3 +134,10 @@ def register(request: Request, login: Annotated[str, Form()], password: Annotate
     response.set_cookie(key="Authorization", value=login)
 
     return response
+
+@app.post("/delete")
+def delete(request: Request, url: Annotated[str, Form()]):
+    theDatabase = databaseHandler.DatabaseHandler()
+    if theDatabase.delete_link(url):
+        return RedirectResponse(url="/user/urls", status_code=302)
+    return HTMLResponse(content="c'est pas bon", status_code=422)
