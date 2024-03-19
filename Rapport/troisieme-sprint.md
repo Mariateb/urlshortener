@@ -31,15 +31,3 @@ Yacine: rédaction des rapports, fix suppression lien expirée, maintenant authe
 - Tâches complétées:
     * Affichage de toutes les urls
     * Page de connexion/création de compte
-
-### Sprint 4
-
-- finir co et affichage
-- nombre de visite
-- bouton supprimer
-- poc génération aléatoire vs hashage
-
-gestion de crises
-backlog par priorité
-voir cours
-
