@@ -25,7 +25,8 @@ Tâches à débuter:
 
 C'est la merde.  
 Fait pendant la présentation:
-* 
+* Problème de git et de respect des règles de bonne conduite mise en place au sein de l'équipe
+* Gestion de crise incroyable avec un bon team work
 
 ## Review
 
@@ -33,4 +34,3 @@ C'est la merde. Heureusement c'est fini.
 Fait pendant la présentation:
 * Tout le retard a été rattrapé
 * Toutes les features ont été implémentés conformément au cahier des charges défini lors de la première séance
-

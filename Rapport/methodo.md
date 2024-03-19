@@ -30,7 +30,10 @@ Il y avait un scrum master: Yacine.
 Au milieu du sprint on organise un daily scrum. C'est l'occasion de faire un point sur l'avancement de chacun,
 ce qu'il reste à faire et de se mettre d'accord sur l'implémentation.  
 Nous avons utilisé Git pour gérer le projet. Nous avons décidé que chaque ticket avait sa branche.
-Lorsque le développement est fini le scrum master relit la PR. Si c'est ok elle est mergée,
+Lorsque le développement est fini le scrum master relit la pull request (PR). Si c'est ok elle est mergée,
 sinon elle est renvoyée en correction avec quelques commentaires pour expliquer ce qui ne va pas.  
-
+Conditions pour qu'une PR soit validée: 
+- code propre
+- respect des conventions de nommage
+- respect de l'architecture de l'application  
 
