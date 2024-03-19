@@ -41,6 +41,42 @@ async def disconnect():
     theResponse.delete_cookie("token")
     return theResponse
 
+@app.get("/printURL_ALL", response_class=HTMLResponse)
+async def print_all_urls(request: Request):
+    # Récupérez toutes les URL raccourcies depuis la base de données
+    theDatabase = databaseHandler.DatabaseHandler()
+    shortened_urls, origined_urls = theDatabase.get_shortened_urls_from_database_all()
+
+    # Créez le contenu du tableau HTML
+    urls = []
+    for url_Short, url_origne in zip(shortened_urls, origined_urls):
+        urls.append({'url_Short': url_Short, 'url_origne': url_origne})  # Correction ici
+
+    # Utilisez un template pour générer la page HTML
+    return templates.TemplateResponse(
+        request=request,
+        name='print_URL_ALL.html',
+        context={'urls': urls}
+    )
+
+@app.get("/printURL_USER", response_class=HTMLResponse)
+async def print_all_urls(request: Request):
+    # Récupérez toutes les URL raccourcies depuis la base de données
+    theDatabase = databaseHandler.DatabaseHandler()
+    shortened_urls, origined_urls = theDatabase.get_shortened_urls_from_database_user()
+
+    # Créez le contenu du tableau HTML
+    urls = []
+    for url_Short, url_origne in zip(shortened_urls, origined_urls):
+        urls.append({'url_Short': url_Short, 'url_origne': url_origne})  # Correction ici
+
+    # Utilisez un template pour générer la page HTML
+    return templates.TemplateResponse(
+        request=request,
+        name='print_URL_ALL.html',
+        context={'urls': urls}
+    )
+
 
 @app.get("/{shortName}", response_class=RedirectResponse)
 async def redirect(shortName, request: Request):
