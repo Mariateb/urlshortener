@@ -7,10 +7,8 @@ def hash_password(input_password: str) -> str:
     """
     Hash a given password and return the hashed one
     :param input_password: The string to hash
-    :param size: The size of the resulting hash
 
     :return hash: The hash value
-    :author: Sabri MOUSSA
     """
     computed_hash = hashlib.md5(bytes(input_password, 'utf8'))
     return computed_hash.hexdigest()
