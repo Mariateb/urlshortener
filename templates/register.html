@@ -1,0 +1,54 @@
+<html lang="fr">
+<head>
+    <title>Le raccourcisseur d'url pour les bobo écolos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script language="JavaScript">
+        var password = document.getElementById("password")
+            , confirm_password = document.getElementById("confirm_password");
+
+        function validatePassword() {
+            if (password.value != confirm_password.value) {
+                confirm_password.setCustomValidity("Passwords Don't Match");
+            } else {
+                confirm_password.setCustomValidity('');
+            }
+        }
+
+        password.onchange = validatePassword;
+        confirm_password.onkeyup = validatePassword;
+    </script>
+</head>
+<body>
+<div class="main-form container max-w-[512px] m-auto justify-center flex flex-col">
+
+    <div class="text-center my-8">
+        <h1 class="text-xl text-center mb-8">Se connecter</h1>
+        <p>authentifiez-vous !</p>
+    </div>
+
+    <form class="justify-center flex flex-col gap-4 mt-6" method="post" action="/register">
+        <label>
+            <input type="email" name="login" placeholder="example@xyz.com"
+                   class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500
+                   block w-full p-2.5 text-center" required/>
+        </label>
+        <label>
+            <input id="password" type="password" name="password" placeholder="******"
+                   class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500
+                   block w-full p-2.5 text-center" required/>
+        </label>
+        <label>
+            <input id="confirm_password" type="password" name="confirmation" placeholder="******"
+                   class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500
+                   block w-full p-2.5 text-center" required/>
+        </label>
+        <input type="submit" style="align-self: center"
+               class="text-gray-900 bg-blue-500 border border-blue-500 focus:outline-none hover:bg-blue-600 focus:ring-4
+                focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 my-2 w-fit" value="Créer"/>
+    </form>
+    {% if message %}
+        <p style="color: red">{{ message }}</p>
+    {% endif %}
+</div>
+</body>
+</html>

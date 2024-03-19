@@ -21,17 +21,12 @@ NB: suite aux mauvais dev du sprint précédent il y a un ticket supplémentaire
 ## Review
 
 - Suite au retard de la dernière séance on n'a pas pu terminer les tâches du sprint (demi-sprint)
-- Mauvais découpage de la tâche co user -> trop grosse
+- Mauvais découpage de la tâche connexion utilisateur -> trop grosse
 
-Tâches complétées: 0
+Tâches complétées: 1
 
 ## Retro
 
 - Quentin est de retour
 - Jérémie veut faire du pair programming
 - Enfin une backlog
-
-
-redécouper la co user ? 
-nombre de vues 
-

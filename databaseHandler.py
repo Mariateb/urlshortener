@@ -1,8 +1,9 @@
 import logging
 import sqlite3
 from datetime import datetime, timedelta
-from typing import Any
+
 from fastapi import HTTPException
+
 
 class DatabaseHandler:
 
@@ -18,10 +19,24 @@ class DatabaseHandler:
             expires_at DATETIME,
             visits INTEGER)
             """)
+        self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS users(
+            login TEXT PRIMARY KEY,
+            password TEXT)
+            """)
+        self.cursor.execute("""
+            create table IF NOT EXISTS usersLink(
+                login_users text
+                    constraint usersLink_users_login_fk
+                        references users,
+                id_link     text
+                    constraint usersLink_links_id_fk
+                        references links
+            )""")
 
         self.connection.commit()
 
-    def insertLink(self, link: str, hashedLink: str, duration: int = 180) -> str | None:
+    def insert_link(self, link: str, hashedLink: str, user, duration: int = 180) -> str | None:
         if duration <= 0:
             raise HTTPException(status_code=500, detail="Failed to insert link : Invalid duration")
 
@@ -52,6 +67,19 @@ class DatabaseHandler:
             self.resetConnection()
             logging.error(e)
             raise HTTPException(status_code=500, detail="Failed to insert link")
+
+        if user is not None:
+            self.cursor.execute("""
+                    INSERT INTO usersLink VALUES (?, ?)""",
+                                (user[0],
+                                 hashedLink))
+            try:
+                self.connection.commit()
+            except sqlite3.OperationalError as e:
+                self.resetConnection()
+                logging.error(e)
+                raise HTTPException(status_code=500, detail="Failed to insert link")
+
         return hashedLink
 
     def addVisitor(self, hashedLink: str):
@@ -89,7 +117,7 @@ class DatabaseHandler:
         value = links[0][0]
         return value
 
-    def deleteOldLinks(self) -> None:
+    def delete_old_links(self) -> None:
         current_date = datetime.now()
         try:
             self.cursor.execute("SELECT id FROM links WHERE expires_at <= ?", (current_date,))
@@ -100,10 +128,10 @@ class DatabaseHandler:
         expired_links = self.cursor.fetchall()
 
         for link in expired_links:
-            self.cursor.execute("DELETE FROM links WHERE id = ?", (link[0],))
+            self.delete_link(link[0])
         self.connection.commit()
 
-    def getLink(self, hashing) -> str | None:
+    def get_link(self, hashing) -> str | None:
         self.cursor.execute("SELECT link FROM links WHERE id = ?", (hashing,))
         result = self.cursor.fetchone()
         if result:
@@ -114,3 +142,49 @@ class DatabaseHandler:
         self.connection.close()
         self.connection = sqlite3.connect(self.dbFilename)
         self.cursor = self.connection.cursor()
+
+    def create_user(self, login, password):
+        try:
+            self.cursor.execute("INSERT INTO users VALUES (?, ?)", (login, password))
+        except sqlite3.IntegrityError:
+            self.connection.rollback()
+            return None
+        self.connection.commit()
+        return self.cursor.lastrowid
+
+    def get_user(self, login):
+        self.cursor.execute("SELECT login FROM users WHERE login = ?", (login,))
+        return self.cursor.fetchone()
+
+    def get_password(self, login):
+        self.cursor.execute("SELECT password FROM users WHERE login = ?", (login,))
+        return self.cursor.fetchone()
+
+    def get_user_urls(self, user):
+        if user is None:
+            return []
+        self.cursor.execute("""
+        SELECT l.id, l.link FROM links l JOIN usersLink ul ON ul.id_link = l.id WHERE ul.login_users = ?
+        """, (user[0],))
+
+        return self.cursor.fetchall()
+
+    def get_all_urls(self):
+        self.cursor.execute("SELECT id, link FROM links")
+
+        return self.cursor.fetchall()
+
+    def delete_link(self, url):
+        try:
+            self.cursor.execute("DELETE FROM links WHERE id = ?", (url,))
+        except sqlite3.Error as e:
+            self.resetConnection()
+            return False
+        self.connection.commit()
+        try:
+            self.cursor.execute("DELETE FROM usersLink WHERE id_link = ?", (url,))
+        except sqlite3.Error as e:
+            self.resetConnection()
+            return True
+        self.connection.commit()
+        return True
