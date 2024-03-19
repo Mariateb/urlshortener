@@ -28,16 +28,27 @@ class DatabaseHandlerTestCase(unittest.TestCase):
 
         self.assertEqual(creationDate + timedelta(days=20), expirationDate)
 
+        expectedVisits = 0
+        visits = self.databaseHandler.getVisits('test')
+        self.assertEqual(visits, expectedVisits)
+
         yesterday = datetime.today() - timedelta(days=1)
         self.databaseHandler.cursor.execute('UPDATE links SET expires_at = ? WHERE id = ?',
                                             (yesterday, 'test'))
         self.databaseHandler.connection.commit()
 
+        self.databaseHandler.addVisitor('test')
+
+        expectedVisits = 1
+        visits = self.databaseHandler.getVisits('test')
+
+        self.assertEqual(visits, expectedVisits)
+
+
         self.databaseHandler.delete_old_links()
         self.assertIsNone(self.databaseHandler.get_link('test'))
 
         self.assertEqual(True, self.databaseHandler.delete_link("urlImpossible"))
-
 
 def clearTestDatabase():
     db = sqlite3.connect('test.db')

@@ -6,6 +6,7 @@ from fastapi.templating import Jinja2Templates
 
 import databaseHandler
 import hasher
+import randomGenerator
 
 app = FastAPI()
 templates = Jinja2Templates('templates')
@@ -74,6 +75,7 @@ async def redirect(shortName, request: Request):
     if link:
         if not link.startswith("https://") and not link.startswith("http://"):
             link = "https://" + link
+        theDatabase.addVisitor(shortName)
         return RedirectResponse(url=link)
     return templates.TemplateResponse(request=request, name='not-found.html', status_code=404)
 
@@ -89,15 +91,15 @@ async def create(request: Request, url: Annotated[str, Form()], duration: Annota
     :param size: the size of the shortened url requested
     :return the response:
     """
-    myHasher = hasher.Hasher()
-    hashed = myHasher.hash_string(url, size)
+
+    myGenerator = randomGenerator.RandomGenerator()
+    shortened = myGenerator.generate(size)
     user = get_logged_user(request.cookies.get('Authorization'))
-    print(user, request.cookies.get('Authorization'))
-    if url != "" and hashed:
+    if url != "" and shortened:
         theDatabase = databaseHandler.DatabaseHandler()
-        if theDatabase.insert_link(url, hashed, user, duration=duration):
+        if theDatabase.insert_link(url, shortened, user, duration=duration):
             return templates.TemplateResponse(
-                request=request, name='shortened-url.html', context={'url': 'http://localhost:8000/' + hashed})
+                request=request, name='shortened-url.html', context={'url': 'http://localhost:8000/' + shortened})
     return HTMLResponse(content="c'est pas bon", status_code=422)
 
 

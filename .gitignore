@@ -2,6 +2,8 @@
 .idea/
 __pycache__/
 
+**/*.db
+
 test/test.db
 
 *.db

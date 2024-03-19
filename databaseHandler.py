@@ -16,7 +16,8 @@ class DatabaseHandler:
             id TEXT PRIMARY KEY,
             link TEXT,
             created_at DATETIME,
-            expires_at DATETIME)
+            expires_at DATETIME,
+            visits INTEGER)
             """)
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS users(
@@ -52,12 +53,14 @@ class DatabaseHandler:
         if len(links) > 0:
             return hashedLink
 
+        visits = 0
         self.cursor.execute("""
-        INSERT INTO links VALUES (?, ?, ?, ?)""",
+        INSERT INTO links VALUES (?, ?, ?, ?, ?)""",
                             (hashedLink,
                              link,
                              created_at,
-                             expires_at))
+                             expires_at,
+                             visits))
         try:
             self.connection.commit()
         except sqlite3.OperationalError as e:
@@ -79,6 +82,42 @@ class DatabaseHandler:
 
         return hashedLink
 
+    def addVisitor(self, hashedLink: str):
+        try:
+            self.cursor.execute('SELECT * FROM links WHERE id = ?', (hashedLink,))
+        except sqlite3.OperationalError:
+            self.resetConnection()
+            return
+
+        links = list(self.cursor.fetchall())
+
+        if len(links) == 0:
+            raise HTTPException(status_code=500, detail="Failed to update visitor count : Invalid link")
+
+        try:
+            self.cursor.execute("UPDATE links SET visits = visits + 1 WHERE id = ?", (hashedLink,))
+            self.connection.commit()
+        except sqlite3.OperationalError as e:
+            self.resetConnection()
+            logging.error(e)
+            return
+
+    def getVisits(self, hashedLink: str) -> int:
+        try:
+            self.cursor.execute('SELECT visits FROM links WHERE id = ?', (hashedLink,))
+        except sqlite3.OperationalError:
+            self.resetConnection()
+            return
+
+        links = list(self.cursor.fetchall())
+
+        if len(links) == 0:
+            raise HTTPException(status_code=500, detail="Failed to update visitor count : Invalid link")
+
+        value = links[0][0]
+        return value
+
+    def deleteOldLinks(self) -> None:
     def delete_old_links(self) -> None:
         current_date = datetime.now()
         try:
