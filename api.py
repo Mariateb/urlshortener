@@ -63,7 +63,7 @@ async def print_all_urls(request: Request):
 async def print_all_urls(request: Request):
     # Récupérez toutes les URL raccourcies depuis la base de données
     theDatabase = databaseHandler.DatabaseHandler()
-    shortened_urls, origined_urls = theDatabase.get_shortened_urls_from_database_user()
+    shortened_urls, origined_urls = theDatabase.get_shortened_urls_from_database_user(request.cookies.get("token"))
 
     # Créez le contenu du tableau HTML
     urls = []

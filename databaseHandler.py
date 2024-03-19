@@ -6,6 +6,9 @@ from typing import Any, Tuple, List
 from typing import Any
 from fastapi import HTTPException
 
+import api
+
+
 class DatabaseHandler:
 
     def __init__(self, dbFilename: str = "urlshortener.db"):
@@ -24,6 +27,18 @@ class DatabaseHandler:
             login TEXT PRIMARY KEY,
             password TEXT)
             """)
+        self.cursor.execute("""
+            create table IF NOT EXISTS usersLink(
+                id text
+                    constraint usersLink_pk
+                        primary key,
+                login_users text
+                    constraint usersLink_users_login_fk
+                        references users,
+                id_link     text
+                    constraint usersLink_links_id_fk
+                        references links
+            )""")
 
         self.connection.commit()
 
@@ -101,26 +116,27 @@ class DatabaseHandler:
         return self.cursor.fetchone()
 
 
-def get_shortened_urls_from_database_user(self) -> Tuple[List[str], List[str]]:
-    conn = sqlite3.connect('urlshortener.db')
-    cursor = conn.cursor()
-    user_id = '018794d4'
-    cursor.execute(
-        f"SELECT id, link FROM links WHERE id IN (SELECT fk_link_id FROM Utilisateur_Lien WHERE fk_user_id='{user_id}')")
-    results = cursor.fetchall()
-    conn.close()
-    shortened_urls = [row[0] for row in results]
-    origined_urls = [row[1] for row in results]
-    return shortened_urls, origined_urls
+    def get_shortened_urls_from_database_user(self,cookie) -> Tuple[List[str], List[str]]:
+        conn = sqlite3.connect('urlshortener.db')
+        cursor = conn.cursor()
+        user_id = cookie
+        cursor.execute(
+            "SELECT id, link FROM links WHERE id IN ( SELECT id_link FROM usersLink WHERE login_users = ? )",(user_id,)
+        )
+        results = cursor.fetchall()
+        conn.close()
+        shortened_urls = [row[0] for row in results]
+        origined_urls = [row[1] for row in results]
+        return shortened_urls, origined_urls
 
 
-def get_shortened_urls_from_database_all(self) -> List[str]:
-    conn = sqlite3.connect('urlshortener.db')
-    cursor = conn.cursor()
-    cursor.execute("SELECT id, link FROM links")
-    results = cursor.fetchall()
-    # print(results)
-    conn.close()
-    shortened_urls = [row[0] for row in results]
-    origined_urls = [row[1] for row in results]
-    return shortened_urls, origined_urls
+    def get_shortened_urls_from_database_all(self) -> List[str]:
+        conn = sqlite3.connect('urlshortener.db')
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, link FROM links")
+        results = cursor.fetchall()
+        # print(results)
+        conn.close()
+        shortened_urls = [row[0] for row in results]
+        origined_urls = [row[1] for row in results]
+        return shortened_urls, origined_urls
