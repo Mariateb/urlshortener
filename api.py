@@ -31,6 +31,7 @@ async def reroute(request: Request, shortName):
     theDatabase.deleteOldLinks()
     link = theDatabase.getLink(shortName)
     if link:
+        theDatabase.addVisitor(shortName)
         return RedirectResponse(url=link)
     return templates.TemplateResponse(request=request, name='not-found.html', status_code=404)
 
