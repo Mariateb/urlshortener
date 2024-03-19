@@ -32,8 +32,6 @@ Pensez aux tests
 
 Description: les utilisateurs peuvent sélectionner la durée de vie de l'url raccourcie
 
-## En cours
-
 ### Connexion utilisateur
 
 Description: Permettre aux utilisateurs de créer un compte et de se connecter
@@ -43,15 +41,17 @@ Découpage en 2 sous-tâches:
 * Stockage des infos + authentification
 * Formulaire de connexion et création de compte
 
-### Gestion des urls raccourcies par utilisateurs
-
-Description: associer url raccourcie à l'utilisateur et lui permettre de voir les urls qu'il a raccourcies et leur durée
-de vie
-
 ### Nombre de visites URL pour utilisateur connecté
 
 Description: Dans l'affichage des urls d'un utilisateur, afficher le nombre de fois que l'url a été visitée  
 Piste: lors de la redirection
+
+## En cours
+
+### Gestion des urls raccourcies par utilisateurs
+
+Description: associer url raccourcie à l'utilisateur et lui permettre de voir les urls qu'il a raccourcies et leur durée
+de vie
 
 ### Bouton supprimer
 
