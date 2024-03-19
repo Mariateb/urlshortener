@@ -22,6 +22,7 @@ NB: suite aux mauvais dev du sprint précédent il y a un ticket supplémentaire
 
 - Suite au retard de la dernière séance on n'a pas pu terminer les tâches du sprint (demi-sprint)
 - Mauvais découpage de la tâche connexion utilisateur -> trop grosse
+- Ajout de tests suite au ticket "Gestion des erreurs"
 
 Tâches complétées: 1
 

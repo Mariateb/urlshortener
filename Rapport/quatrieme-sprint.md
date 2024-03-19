@@ -24,7 +24,13 @@ Tâches à débuter:
 ## Retro
 
 C'est la merde.  
+Fait pendant la présentation:
+* 
 
 ## Review
 
 C'est la merde. Heureusement c'est fini.  
+Fait pendant la présentation:
+* Tout le retard a été rattrapé
+* Toutes les features ont été implémentés conformément au cahier des charges défini lors de la première séance
+
