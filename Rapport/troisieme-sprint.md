@@ -1,6 +1,6 @@
 # URL Shortener - Troisième sprint
 
-## Description 
+## Description
 
 - Redécoupage de la connexion utilisateur
 - Affichage des URLs par utilisateur
@@ -10,7 +10,7 @@
 [Connexion utilisateur - page de login](backlog.md#connexion-utilisateur)  
 [Connexion utilisateur - authentification et token](backlog.md#connexion-utilisateur)  
 [Gestion des urls raccourcies par utilisateurs](backlog.md#gestion-des-urls-raccourcies-par-utilisateurs)  
-[Nombre de visites URL pour utilisateur connecté](backlog.md#nombre-de-visites-url-pour-utilisateur-connecté)    
+[Nombre de visites URL pour utilisateur connecté](backlog.md#nombre-de-visites-url-pour-utilisateur-connecté)
 
 ## Daily
 
@@ -29,5 +29,17 @@ Yacine: rédaction des rapports, fix suppression lien expirée, maintenant authe
 - Encore des petits trucs à finir
 - Quentin a avancé en dehors des séances
 - Tâches complétées:
-  * Affichage de toutes les urls
-  * Page de connexion/création de compte
+    * Affichage de toutes les urls
+    * Page de connexion/création de compte
+
+### Sprint 4
+
+- finir co et affichage
+- nombre de visite
+- bouton supprimer
+- poc génération aléatoire vs hashage
+
+gestion de crises
+backlog par priorité
+voir cours
+

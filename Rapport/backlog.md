@@ -53,4 +53,10 @@ de vie
 Description: Dans l'affichage des urls d'un utilisateur, afficher le nombre de fois que l'url a été visitée  
 Piste: lors de la redirection
 
+### Bouton supprimer
+
+Description: Dans l'affichage des urls, l'utilisateur peut supprimer un lien qu'il a raccourci.  
+
 ## A faire
+
+
