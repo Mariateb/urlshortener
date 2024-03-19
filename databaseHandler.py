@@ -164,7 +164,7 @@ class DatabaseHandler:
         if user is None:
             return []
         self.cursor.execute("""
-        SELECT l.id, l.link FROM links l JOIN usersLink ul ON ul.id_link = l.id WHERE ul.login_users = ?
+        SELECT l.id, l.link, l.visits FROM links l JOIN usersLink ul ON ul.id_link = l.id WHERE ul.login_users = ?
         """, (user[0],))
 
         return self.cursor.fetchall()
