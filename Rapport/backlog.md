@@ -28,7 +28,9 @@ Description: Page Internet où l'utilisateur peut saisir une url, et affichage d
 Description: il faut gérer les erreurs dans l'application afin qu'elle ne crash pas  
 Pensez aux tests
 
-## En cours
+### Durée de vie des urls raccourcies paramétrable pour utilisateurs connectés
+
+Description: les utilisateurs peuvent sélectionner la durée de vie de l'url raccourcie
 
 ### Connexion utilisateur
 
@@ -39,18 +41,22 @@ Découpage en 2 sous-tâches:
 * Stockage des infos + authentification
 * Formulaire de connexion et création de compte
 
-### Durée de vie des urls raccourcies paramétrable pour utilisateurs connectés
+### Nombre de visites URL pour utilisateur connecté
 
-Description: les utilisateurs peuvent sélectionner la durée de vie de l'url raccourcie
+Description: Dans l'affichage des urls d'un utilisateur, afficher le nombre de fois que l'url a été visitée  
+Piste: lors de la redirection
+
+## En cours
 
 ### Gestion des urls raccourcies par utilisateurs
 
 Description: associer url raccourcie à l'utilisateur et lui permettre de voir les urls qu'il a raccourcies et leur durée
 de vie
 
+### Bouton supprimer
+
+Description: Dans l'affichage des urls, l'utilisateur peut supprimer un lien qu'il a raccourci.  
+
 ## A faire
 
-### Nombre de visites URL pour utilisateur connecté
 
-Description: Dans l'affichage des urls d'un utilisateur, afficher le nombre de fois que l'url a été visitée  
-Piste: lors de la redirection
